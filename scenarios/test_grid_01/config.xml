@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- note
+-->
+<data>
+    <urls>
+        <url name="absPath" type="dir">/home/mt_licit/project/symupol</url>
+        <url name="folder_scenarios" type="dir">scenarios</url>
+        <url name="scenario" type="dir">test_grid_01</url>
+        <url name="tmp" type="dir">.tmp</url>
+        <url name="resources" type="dir">resources</url>
+        <url name="config" type="file">config</url>
+        <url name="setup" type="file">5x5grid</url>
+        <url name="folder_outputs" type="dir">outputs</url>
+        <url name="dir_gen" type="dir">gen</url>
+    </urls>
+
+    <simulation>
+        <parameter name="id"></parameter>
+        <parameter name="pasdetemps"></parameter>
+        <parameter name="debut"></parameter>
+        <parameter name="fin"></parameter>
+        <parameter name="loipoursuite"></parameter>
+        <parameter name="comportementflux"></parameter>
+        <parameter name="date"></parameter>
+        <parameter name="titre"></parameter>
+        <parameter name="proc_deceleration"></parameter>
+        <parameter name="seed"></parameter>
+    </simulation>
+
+    <trafic>
+        <parameter name="id"></parameter>
+        <parameter name="accbornee"></parameter>
+        <parameter name="coeffrelax"></parameter>
+        <parameter name="chgtvoie_ghost"></parameter>
+    </trafic>
+    <scenario>
+        <parameter name="id="></parameter>
+        <parameter name="simulation_id"></parameter>
+        <parameter name="trafic_id"></parameter>
+        <parameter name="reseau_id"></parameter>
+        <parameter name="dirout"></parameter>   <!-- do not edit this!-->
+        <parameter name="prefout"></parameter>
+    </scenario>
+</data>

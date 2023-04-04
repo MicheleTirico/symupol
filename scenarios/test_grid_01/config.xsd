@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="data" type="dataType">
+    <xs:annotation>
+      <xs:documentation> note
+</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:complexType name="urlType">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute type="xs:string" name="name" use="optional"/>
+        <xs:attribute type="xs:string" name="type" use="optional"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+  <xs:complexType name="urlsType">
+    <xs:sequence>
+      <xs:element type="urlType" name="url" maxOccurs="unbounded" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="parameterType">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute type="xs:string" name="name" use="optional"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+  <xs:complexType name="simulationType">
+    <xs:sequence>
+      <xs:element type="parameterType" name="parameter" maxOccurs="unbounded" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="traficType">
+    <xs:sequence>
+      <xs:element type="parameterType" name="parameter" maxOccurs="unbounded" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="scenarioType">
+    <xs:sequence>
+      <xs:element type="parameterType" name="parameter" maxOccurs="unbounded" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation> do not edit this!</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="dataType">
+    <xs:sequence>
+      <xs:element type="urlsType" name="urls"/>
+      <xs:element type="simulationType" name="simulation"/>
+      <xs:element type="traficType" name="trafic"/>
+      <xs:element type="scenarioType" name="scenario"/>
+    </xs:sequence>
+  </xs:complexType>
+</xs:schema>
