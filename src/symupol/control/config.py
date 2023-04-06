@@ -13,8 +13,8 @@ class Config:
 
     def initUrl(self):
         self.logger.log(cl=self,method=sys._getframe(),message="set paths")
-        # init logger
 
+        # init logger
         self.__tree=ET.parse(self.pathConfig)
         self.__data=self.__tree.getroot()
 
@@ -44,6 +44,10 @@ class Config:
         self.pathTrajMerged                 =self.folder_output+"trajectoires.csv"
         self.pathFzp                        =self.folder_output+"trajectoiresFzp.fzp"
 
+        self.pathDictVehicles               =self.folder_output+"dictVehicles.pkl"
+
+
+    def setTools(self,tools):               self.tools=tools
 
     def __getValType(self,name_root,name_tag,name,type):
         tag_root=self.__data.find(name_root)

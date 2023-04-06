@@ -129,10 +129,11 @@ dmypy.json
 .pyre/
 
 # folders
+resources/
 scenarios/
 outputs/
 examples/
-test/
+.tmp/
 
 # idea
 .idea

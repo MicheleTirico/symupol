@@ -53,6 +53,10 @@ class Logger:
                 with open(self.__config.pathLog, "a") as f:     f.write(mess+"\n")
             print (mess)
 
+    """
+    doQuit: the whole process end if warning is activated
+    doReturn: if warning is active, return True
+    """
     def warning (self,cl,method,message,doQuit,doReturn):
         if self.__displayWarning:
             mess =self.__completeMessage("WAR",cl,method,message)
