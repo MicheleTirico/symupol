@@ -1,8 +1,6 @@
-import os
 import sys
 import xml.etree.ElementTree as ET
 
-from symupol.control.logger import Logger
 
 
 class EditSetupSymuvia:
@@ -16,6 +14,7 @@ class EditSetupSymuvia:
         # tree config
         self.__tree_config = ET.parse(self.__config.pathConfig)
         self.__root_config = self.__tree_config.getroot()
+
 
     def editSimulation(self, run):
         self.__config.logger.log(cl=self, method=sys._getframe(), message="create new setup, edit simulation")

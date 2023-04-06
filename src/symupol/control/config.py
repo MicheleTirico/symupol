@@ -1,9 +1,6 @@
 import xml.etree.ElementTree as ET
 import sys
 
-from symupol.control.logger import Logger
-
-
 class Config:
     def __init__(self,pathConfig):
         self.__tree = 0              # etree
@@ -45,7 +42,7 @@ class Config:
         self.pathDri                        =self.folder_output+"dri/"
         self.gen=                           self.pathAbs+self.__getValType("urls","url","dir_gen","dir")+"/"
         self.pathTrajMerged                 =self.folder_output+"trajectoires.csv"
-        self.pathFzp                        =self.folder_output+"trajectoiresFzp.csv"
+        self.pathFzp                        =self.folder_output+"trajectoiresFzp.fzp"
 
 
     def __getValType(self,name_root,name_tag,name,type):

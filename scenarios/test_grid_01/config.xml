@@ -3,7 +3,7 @@
 -->
 <data>
     <urls>
-        <url name="absPath" type="dir">/home/mt_licit/project/symupol</url>
+        <url name="absPath" type="dir">/home/mt_licit/project/symupol/symupol</url>
         <url name="folder_scenarios" type="dir">scenarios</url>
         <url name="scenario" type="dir">test_grid_01</url>
         <url name="tmp" type="dir">.tmp</url>

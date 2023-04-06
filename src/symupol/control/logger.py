@@ -25,14 +25,15 @@ class Logger:
 
 
     def log (self,cl,method,message):
-        if self.__displayLog:
-            mess= self.__completeMessage("LOG",cl,method,message)
-            print (mess)
-        if self.__storeLocal:
-            self.__listMessages.append(mess)
-        elif self.__storeLog:
-            with open(self.__config.pathLog, "a") as f:     f.write(mess+"\n")
-
+        try:
+            if self.__displayLog:
+                mess= self.__completeMessage("LOG",cl,method,message)
+                print (mess)
+            if self.__storeLocal:
+                self.__listMessages.append(mess)
+            elif self.__storeLog:
+                with open(self.__config.pathLog, "a") as f:     f.write(mess+"\n")
+        except AttributeError:print ("peppe")
 
     def setDisplay(self,displayLog,displayWarning,displayError,displayStateSim):
         self.__displayLog=displayLog

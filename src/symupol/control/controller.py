@@ -1,9 +1,6 @@
 import sys
 import os
 from symupy.runtime.api import Simulator, Simulation
-
-
-
 class Controller:
     def __init__(self,config):
         self.__config=config
@@ -54,6 +51,11 @@ class Controller:
         ]
         self.__createfolers(paths)
 
+    def initTmp(self):
+        files=[self.__config.setup]
+        self.__copyFiles(files,self.__config.tmp)
+
+
     def moveOutput(self,run):
         self.__config.logger.log(cl=self,method=sys._getframe(),message="move outputs")
         if run:
@@ -66,7 +68,13 @@ class Controller:
             if os.path.exists(path)==False:
                 self.__config.logger.log(cl=self,method=sys._getframe(),message="create folder in: "+path)
                 os.system("mkdir "+path)
-    
+
+    def __copyFiles(self,files, pathDirectoryOutput):
+        for file in files :
+            if os.path.exists(file)==False:
+                self.__config.logger.log(cl=self,method=sys._getframe(),message="copy file in: "+file)
+                os.system("cp "+file +" "+pathDirectoryOutput+"/"+os.path.basename(file))
+
     def initPhem (self):
         self.__config.logger.log(cl=self,method=sys._getframe(),message="init Phem")
         paths=[self.__config.outputPhem]

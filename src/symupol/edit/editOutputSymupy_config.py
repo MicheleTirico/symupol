@@ -2,7 +2,7 @@ import os
 import xml.etree.ElementTree as ET
 import sys
 
-class EditOutputSymupy:
+class EditOutputSymupy_config:
     def __init__(self,config,run):
         self.__run=run
         self.__config=config
@@ -52,12 +52,31 @@ class EditOutputSymupy:
 
             with open(self.__config.pathFzp, "a") as f:
                 f.write(headerTraj+"\n")
-                print ("peppe",len(self.__vehicles))
-                for item in self.__vehicles.items():
-                    list=[str(item[0]),str(item[1])
+                for vehicle in self.__vehicles.items():
+                    for item in vehicle:
+                        for vals in item:
+                            if type(vals) is list:
 
-                    ]
-                    f.write(list[0]+";"+list[1]+"\n")
+                     #           print (type(vals),len(vals),vals)
+                                l= [vals[0], # time
+                                    vals[1], # x
+                                    vals[5], # y
+                                    vals[4], # vehicle number
+                                    vals[8], # speed
+                                    vals[10],# road inclination
+                                    100,#vals[7],# vehicle type
+                                    0#vals[6]# segment number
+                                    ]
+                    # print (type(vals[0]))
+                    # print (float(vals[0]))
+                    # print (round(vals[0]))
+                    # print (int(vals[0]))
+#                    a=str(int(float(vals[0])))+";"+vals[1]+";"+";"+vals[4]+";"+vals[8]+";"+vals[10]+";"+"\n"
+ #                   print (a)
+                    f.write(str(int(float(vals[0])))+";"+vals[1]+";"+ vals[5]+";"+vals[4]+";"+vals[8]+";"+vals[10]+";100;0\n")#vals[6]# segment number
+                    # f.write(";".join(l)+"\n")
+
+                #     list=[item[0],item[1]]                    ]
                     #f.write(";".join(list)+"\n")
 # 0                   [inst_val,
 #                    traj.attrib["abs"],
