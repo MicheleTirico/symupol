@@ -1,4 +1,4 @@
-# SumuPol
+# SymuPol
 
 ## Installation 
 
