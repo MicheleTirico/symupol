@@ -1,4 +1,4 @@
-name: symupy
+name: env_symupy
 channels:
   - conda-forge
   - anaconda
@@ -7,5 +7,5 @@ dependencies:
   - python=3.9.15
   - symuflow
   - symupy
-  
+
 

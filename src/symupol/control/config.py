@@ -34,6 +34,7 @@ class Config:
         self.outputPhem=                    self.folder_output+"phem/"
         self.outputPhemMod=                 self.folder_output+"phem/"+"tmp_400.mod"       # TODO: set the name file
 
+
         self.pathConfigOutput=              self.folder_output+self.__getValType("urls","url","config","file")+".xml"
 
         self.pathLog                        =self.folder_output + self.__getValType("urls","url","scenario","dir")+".md"
@@ -45,6 +46,7 @@ class Config:
         self.pathFzp                        =self.folder_output+"trajectoiresFzp.fzp"
 
         self.pathDictVehicles               =self.folder_output+"dictVehicles.pkl"
+        self.pathDictVehiclesPhem           =self.folder_output+"dictVehiclesPhem.pkl"
 
 
     def setTools(self,tools):               self.tools=tools

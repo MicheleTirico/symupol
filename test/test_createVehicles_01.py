@@ -1,3 +1,4 @@
+from symupol.analysis.vehicles import Vehicles
 from symupol.control.logger import Logger
 from symupol.control.config import Config
 from symupol.control.controller import Controller
@@ -33,12 +34,8 @@ logger.initStoreLog()
 logger.storeFile()
 controller.copyToTmp(True) # copy the setup to the .tmp folder
 
-#cn=CreateNetwork(config=config)
 
-ef=EditFzp(config=config,run=runEditFzp)
-ef.setInputPath(path="/home/mt_licit/project/symupol/outputs/lafayette/ref_CMP_060000_230000_traf.xml")
-
-ef.init()
-ef.compute()
-
+v=Vehicles(config=config,run=True)
+v.setPathOutputPhem("/home/mt_licit/project/symupol/outputs/test/test_OutputPhemMod.mod")
+v.createVehicles()
 

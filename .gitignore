@@ -132,7 +132,6 @@ dmypy.json
 resources/
 scenarios/
 outputs/
-examples/
 .tmp/
 
 # idea
