@@ -33,12 +33,13 @@ class Config:
         self.outputTmp=                     self.tmp+"/OUT1/"
         self.outputPhem=                    self.folder_output+"phem/"
         self.outputPhemMod=                 self.folder_output+"phem/"+"tmp_400.mod"       # TODO: set the name file
+        self.pathOutputSymupy               =self.folder_output+self.__getValType("urls","url","scenario","dir")+"_output_sy.xml"
 
+        self.pathOutputVehicles=            self.folder_output+"output_vehicles.csv"
 
         self.pathConfigOutput=              self.folder_output+self.__getValType("urls","url","config","file")+".xml"
 
         self.pathLog                        =self.folder_output + self.__getValType("urls","url","scenario","dir")+".md"
-        self.pathOutputSymupy               =self.folder_output+self.__getValType("urls","url","scenario","dir")+"_output_sy.xml"
         self.pathTraj                       =self.folder_output+"traj/"
         self.pathDri                        =self.folder_output+"dri/"
         self.gen=                           self.pathAbs+self.__getValType("urls","url","dir_gen","dir")+"/"

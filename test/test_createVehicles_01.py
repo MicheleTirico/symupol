@@ -34,8 +34,17 @@ logger.initStoreLog()
 logger.storeFile()
 controller.copyToTmp(True) # copy the setup to the .tmp folder
 
+# fzp
+ef=EditFzp(config=config,run=runEditFzp)
+ef.init()
+ef.setPathOutputSymuvia(path="/home/mt_licit/project/symupol/outputs/test_grid_01/test_grid_01_output_sy.xml")
+ef.setPathOutputCsvVehicles(path="/home/mt_licit/project/symupol/outputs/test/test_output_vehicles.csv")
+ef.compute(storeFzp=False,storeCsv=True)
 
 v=Vehicles(config=config,run=True)
 v.setPathOutputPhem("/home/mt_licit/project/symupol/outputs/test/test_OutputPhemMod.mod")
 v.createVehicles()
+
+#v.setPathFzp("/home/mt_licit/project/symupol/outputs/test/test_OutputPhemMod.mod")
+v. addTripVehiclesFromFzp()
 

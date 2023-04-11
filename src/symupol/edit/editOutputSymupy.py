@@ -2,6 +2,9 @@ import os
 import xml.etree.ElementTree as ET
 import sys
 
+from symupol.control.logger import Logger
+
+
 class EditOutputSymupy:
     def __init__(self,run,config,logger):
         self.__run=run

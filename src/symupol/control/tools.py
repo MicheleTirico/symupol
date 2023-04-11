@@ -29,7 +29,7 @@ class Tools:
             self.logger.warning(cl=self,method=sys._getframe(),message="file " +pathOutput+" cannot be open. Is the extetion .pkl?",doQuit=False,doReturn=False)
 
     def readDictionaryAsFile(self,pathOutput):
-        self.logger.log(cl=self,method=sys._getframe(),message="start  read dict as file")
+        self.logger.log(cl=self,method=sys._getframe(),message="read dict as file")
         try:
             assert os.path.splitext(pathOutput)[1]==".pkl"
             with open(pathOutput, 'rb') as fp:  return pickle.load(fp)

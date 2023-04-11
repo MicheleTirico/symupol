@@ -37,6 +37,6 @@ controller.copyToTmp(True) # copy the setup to the .tmp folder
 
 ef=EditFzp(config=config,run=runEditFzp)
 ef.init()
-ef.compute()
+ef.compute(storeFzp=True,storeCsv=True)
 
 

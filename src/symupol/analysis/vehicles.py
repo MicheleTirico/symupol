@@ -11,9 +11,29 @@ class Vehicles:
         self.__vehicles=None
         self.__logger.log(cl=self,method=sys._getframe(),message="init vehicles")
 
-    def setPathOutputPhem(self,path): self.__config.outputPhemMod=path
+    def setPathOutputPhem(self,path):       self.__config.outputPhemMod=path
 
+    def setPathFzp(self,path):    self.__config.pathFzp=path
 
+    def addTripVehiclesFromFzp(self):
+        self.__logger.log(cl=self,method=sys._getframe(),message="start  set path of vehicles")
+        with open(self.__config.pathOutputVehicles, "r") as f:
+            stop,i=10,0
+            reader=csv.reader(f)
+            header=next(reader)[0].split(";") # ['t', 'abs', 'acc', 'dst', 'id', 'ord', 'tron', 'type', 'vit', 'voie', 'z']
+            for row in reader:
+                print (row)
+                id=self.__getVal(row,header,"id")[0]
+                i+=1
+                if i==stop:break
+        self.__logger.log(cl=self,method=sys._getframe(),message="finish set path of vehicles")
+
+    def __getVal(self,row,header,name):
+
+        line=row[0].split(";")
+        i=header.index(name)
+
+        return line[i]
     def createVehicles(self):
         self.__logger.log(cl=self,method=sys._getframe(),message="start  create vehicles")
         # create vehicles
@@ -28,6 +48,8 @@ class Vehicles:
                 self.__config.tools.saveDictionaryAsFile(dict=self.__vehicles,pathOutput=self.__config.pathDictVehiclesPhem)
             except AssertionError:  self.__logger.warning(cl=self,method=sys._getframe(),message="len of dictionary is 0",doQuit=False,doReturn=False)
         self.__logger.log(cl=self,method=sys._getframe(),message="finish create vehicles")
+
+        print (self.__vehicles[1].getMapVals())
 
     def __getVehicles (self):
         self.__logger.log(cl=self,method=sys._getframe(),message="start create objects.")
@@ -64,6 +86,7 @@ class Vehicles:
         return vehicles
 
     def __getSplitStr(self,input,pos):    return input[pos].split(":")[1].replace(" ","")
+
 class Vehicle:
     def __init__(self,id):
         self.__id=id
@@ -71,7 +94,6 @@ class Vehicle:
         self.__lenTime=0
         self.__initTime=None
         self.__genFile=None
-        self.__valCO2=[]
         self.__mapVals=None
 
     def setMapVals(self,map):           self.__mapVals=map
