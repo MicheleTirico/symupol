@@ -18,7 +18,7 @@ class EditFzp:
         self.__logger.log(cl=self,method=sys._getframe(),message="init edit fzp")
         self.__vehicles={}
 
-    def compute(self,storeFzp,storeCsv):
+    def compute(self,storeFzp,storeCsv,runIfExist):
         self.__logger.log(cl=self,method=sys._getframe(),message="start  compute fzp")
 
         # create dictionary
@@ -39,33 +39,37 @@ class EditFzp:
             self.__storeFzp(run=storeFzp)
         except AssertionError:            self.__logger.error(cl=self,method=sys._getframe(),message="file: "+self.__config.pathDictVehicles +" not funded. Cannot compute the .fzp file")
 
+        # store csv
         try:
             assert os.path.exists(self.__config.pathDictVehicles)
-            self.__storeCsv(run=storeCsv)
+            self.__storeCsv(run=storeCsv,runIfExist=runIfExist)
         except AssertionError:            self.__logger.error(cl=self,method=sys._getframe(),message="file: "+self.__config.pathDictVehicles +" not funded. Cannot compute the .fzp file")
 
         self.__logger.log(cl=self,method=sys._getframe(),message="finish compute fzp")
 
 
-    def __storeCsv(self,run):
+    def __storeCsv(self,run,runIfExist):
         if run:
             self.__logger.log(cl=self,method=sys._getframe(),message="start  store vehicles csv")
-            if os.path.exists(self.__config.pathOutputVehicles):  os.system("rm "+self.__config.pathOutputVehicles) # remove file if exist
-            headerTraj="t;abs;acc;dst;id;ord;tron;type;vit;voie;z"
-            with open(self.__config.pathOutputVehicles, "a") as f:
-                f.write(headerTraj+"\n")
-                for vehicle in self.__vehicles.items():
-                    for item in vehicle:
-                        for vals in item:
-                            if type(vals) is list:
-                                line=vals
-                                b=[str(line[i]) for i in range(len(line))]
-                                a=";".join(vals)+"\n"
-                                f.write(a)
+            if runIfExist:
+                self.__logger.log(cl=self,method=sys._getframe(),message="remove the existing file and compute it")
+                if os.path.exists(self.__config.pathOutputVehicles):  os.system("rm "+self.__config.pathOutputVehicles) # remove file if exist
+                headerTraj="t;abs;acc;dst;id;ord;tron;type;vit;voie;z"
+                with open(self.__config.pathOutputVehicles, "a") as f:
+                    f.write(headerTraj+"\n")
+                    for vehicle in self.__vehicles.items():
+                        for item in vehicle:
+                            for vals in item:
+                                if type(vals) is list:
+                                    line=vals
+                                    b=[str(line[i]) for i in range(len(line))]
+                                    a=";".join(vals)+"\n"
 
-            print ("--------------------------",self.__config.pathOutputVehicles)
+                                    f.write(a)
+            else:
+                self.__logger.log(cl=self,method=sys._getframe(),message="file was not remove and nothing was computed")
+
             self.__logger.log(cl=self,method=sys._getframe(),message="finish store vehicles csv")
-
 
     def __storeFzp(self,run):
         if run:
@@ -87,7 +91,6 @@ class EditFzp:
 
             self.__logger.log(cl=self,method=sys._getframe(),message="finish store fzp")
 
-
     def __createDictVehicles(self,run):
         if run:
             vehicles={}
@@ -96,11 +99,12 @@ class EditFzp:
             traj_root=traj_tree.getroot()
             traj_element_simulation=traj_root.find("SIMULATION")
             traj_element_instants=traj_element_simulation.find("INSTANTS")
+            # idInt=0
             for inst in traj_element_instants:
                 inst_val=inst.attrib["val"]
                 trajs=inst.find("TRAJS")
                 for traj in trajs:
-                    id=traj.attrib["id"]
+                    id=traj.attrib["id"]                    # idInt+=1
                     try:vehicle= vehicles[id]
                     except KeyError: vehicles[id]=[]
                     self.__attribs=traj.attrib

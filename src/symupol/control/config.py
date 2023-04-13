@@ -35,6 +35,7 @@ class Config:
         self.outputPhemMod=                 self.folder_output+"phem/"+"tmp_400.mod"       # TODO: set the name file
         self.pathOutputSymupy               =self.folder_output+self.__getValType("urls","url","scenario","dir")+"_output_sy.xml"
 
+        self.outputPhemDF                   =self.folder_output+"outputPhemDF.csv"
         self.pathOutputVehicles=            self.folder_output+"output_vehicles.csv"
 
         self.pathConfigOutput=              self.folder_output+self.__getValType("urls","url","config","file")+".xml"

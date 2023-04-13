@@ -1,6 +1,5 @@
 import os
 import sys
-import xml.etree.ElementTree as ET
 import csv
 
 class Vehicles:
@@ -15,25 +14,49 @@ class Vehicles:
 
     def setPathFzp(self,path):    self.__config.pathFzp=path
 
+    def __getVehicle(self,id):
+        try:                    assert type(id)==str
+        except AssertionError:
+            self.__config.logger.warning(cl=self,method=sys._getframe(),message="type of id is not a string",doQuit=False,doReturn=False)
+            return None
+        try:                    return self.__vehicles[id]
+        except KeyError:
+            self.__config.logger.warning(cl=self,method=sys._getframe(),message="vehicle "+id+" not founded" ,doQuit=False,doReturn=False)
+            return None
+
     def addTripVehiclesFromFzp(self):
         self.__logger.log(cl=self,method=sys._getframe(),message="start  set path of vehicles")
         with open(self.__config.pathOutputVehicles, "r") as f:
-            stop,i=10,0
+            stop,i=300,0
             reader=csv.reader(f)
             header=next(reader)[0].split(";") # ['t', 'abs', 'acc', 'dst', 'id', 'ord', 'tron', 'type', 'vit', 'voie', 'z']
             for row in reader:
-                print (row)
-                id=self.__getVal(row,header,"id")[0]
+                id=self.__getVal(row,header,"id")
+                t=self.__getVal(row,header,"t")
+                v=self.__getVehicle(id)
+                if v!=None:
+                    map=v.getMapVals()
+                    map["tron"]=self.__getVal(row,header,"tron")
+
+                    print (map)
+
+
+
+
+
                 i+=1
                 if i==stop:break
         self.__logger.log(cl=self,method=sys._getframe(),message="finish set path of vehicles")
+#        self.__config.tools.saveDictionaryAsFile(dict=self.__vehicles,pathOutput=self.__config.pathOutputVehicles)
 
+    """
+     get the value of a csv row with the the name of the column
+    """
     def __getVal(self,row,header,name):
-
         line=row[0].split(";")
         i=header.index(name)
-
         return line[i]
+
     def createVehicles(self):
         self.__logger.log(cl=self,method=sys._getframe(),message="start  create vehicles")
         # create vehicles
@@ -46,31 +69,29 @@ class Vehicles:
             try:
                 assert len(self.__vehicles)!=0
                 self.__config.tools.saveDictionaryAsFile(dict=self.__vehicles,pathOutput=self.__config.pathDictVehiclesPhem)
-            except AssertionError:  self.__logger.warning(cl=self,method=sys._getframe(),message="len of dictionary is 0",doQuit=False,doReturn=False)
+            except AssertionError:  self.__logger.warning(cl=self,method=sys._getframe(),message="size of dictionary is 0",doQuit=False,doReturn=False)
         self.__logger.log(cl=self,method=sys._getframe(),message="finish create vehicles")
-
-        print (self.__vehicles[1].getMapVals())
 
     def __getVehicles (self):
         self.__logger.log(cl=self,method=sys._getframe(),message="start create objects.")
-
         vehicles={}
         with open (self.__config.outputPhemMod, "r") as f:
             reader=csv.reader(f)
             fileInfo=[]                                                                                                 # remove early lines
             for i in range (5):fileInfo.append(next(f))
-            stopCondition=-10                                                                                            # stop condition for test
+            stopCondition=-10                                                                                           # stop condition for test
             previousStep=None                                                                                           # to find first time
             for line in reader:
                 if "VehNr" in line[0]:
-                    id=int(self.__getSplitStr(line,0))
+                    id=str(self.__getSplitStr(line,0))
                     vehicle=Vehicle(id=None)                                                                            # create vehicle
                     vehicle.setId(id)
                     vehicle.setGenFile(self.__getSplitStr(line,1))
                 elif line[0]!="time" and line[0]!="[s]":
-                    map={}                                                                                              # create and set map of values
-                    for i in range(len(line)):map[str(keys[i])]=line[i]
-                    vehicle.setMapVals(map)
+                    # map={}                                                                                              # create and set map of values
+                    # for i in range(len(line)):map[str(keys[i])]=line[i]
+                    # vehicle.setMapVals(map)
+                    vehicle.addValsDic("")
                     vehicle.incLenTime()                                                                                # set increment of time
                     if previousStep[0]=="[s]": vehicle.setInitTime(line[0])                                             # set init time
                 elif line[0]=="time" : keys=line
@@ -87,16 +108,28 @@ class Vehicles:
 
     def __getSplitStr(self,input,pos):    return input[pos].split(":")[1].replace(" ","")
 
+
+# ----------------------------------------------------------------------------------------------------------------------
 class Vehicle:
     def __init__(self,id):
-        self.__id=id
+        self.__id=str(id)
         self.__time=[]
         self.__lenTime=0
         self.__initTime=None
         self.__genFile=None
-        self.__mapVals=None
+        self.__mapVals= {}
+        self.__dicVals={}
 
-    def setMapVals(self,map):           self.__mapVals=map
+    def addValsDic(self,name,val):
+        try:
+            listvals=self.__dicVals[name]
+            listvals.append(val)
+            self.__dicVals[name]=listvals
+        except KeyError:  self.__logger.warning(cl=self,method=sys._getframe(),message="no key founded",doQuit=False,doReturn=False)
+
+    def getDicVals(self):   return self.__dicVals
+
+    def setMapVals(self,map):        self.__mapVals[map["time"]]=map
 
     def getMapVals(self):                   return self.__mapVals
     def setGenFile(self,genFile):   self.__genFile=genFile
