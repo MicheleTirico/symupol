@@ -34,8 +34,9 @@ class MergeDF:
             df_phem=df_phem[:lim]
 
             print ("start to merge")
+            df3=pd.merge(df_traj,df_phem,on=["id"],how="outer")
 
-            df3=pd.merge(df_traj,df_phem,on=['id',"t"],how="outer")
+            #            df3=pd.merge(df_traj,df_phem,on=['id',"t"],how="outer")
             print ("finish to merge")
 
             print (df3)

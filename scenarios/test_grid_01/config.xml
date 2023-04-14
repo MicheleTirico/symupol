@@ -33,6 +33,7 @@
         <parameter name="coeffrelax"></parameter>
         <parameter name="chgtvoie_ghost"></parameter>
     </trafic>
+
     <scenario>
         <parameter name="id="></parameter>
         <parameter name="simulation_id"></parameter>

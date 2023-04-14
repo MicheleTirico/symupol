@@ -1,11 +1,12 @@
 import sys
 import os
 from symupy.runtime.api import Simulator, Simulation
+import glob
+
 class Controller:
     def __init__(self,config):
         self.__config=config
         self.__config.logger.log(cl=self,method=sys._getframe(),message="init controller")
-
 
     def initSymupy(self):
         self.__config.logger.log(cl=self,method=sys._getframe(),message="init symupy")
@@ -22,6 +23,11 @@ class Controller:
             self.simulator.run()
             self.__config.logger.log(cl=self,method=sys._getframe(),message="finish simulation symupy")
 
+    def editOutput(self,run):
+        if run:
+            self.__config.logger.log(cl=self,method=sys._getframe(),message="edit output symuvia")
+            file=glob.glob(self.__config.folder_output+"*_traf.xml")
+            os.system("mv "+ file[0]+" " +self.__config.pathOutputSymupy )
 
     def deleteTmp(self,run):
         if run and os.path.exists(self.__config.tmp):
@@ -55,7 +61,6 @@ class Controller:
         files=[self.__config.setup]
         self.__copyFiles(files,self.__config.tmp)
 
-
     def moveOutput(self,run):
         self.__config.logger.log(cl=self,method=sys._getframe(),message="move outputs")
         if run:
@@ -68,6 +73,7 @@ class Controller:
             if os.path.exists(path)==False:
                 self.__config.logger.log(cl=self,method=sys._getframe(),message="create folder in: "+path)
                 os.system("mkdir "+path)
+
 
     def __copyFiles(self,files, pathDirectoryOutput):
         for file in files :

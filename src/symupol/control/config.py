@@ -36,29 +36,40 @@ class Config:
         self.pathOutputSymupy               =self.folder_output+self.__getValType("urls","url","scenario","dir")+"_output_sy.xml"
 
         self.outputPhemDF                   =self.folder_output+"outputPhemDF.csv"
-        self.pathOutputVehicles=            self.folder_output+"output_vehicles.csv"
+
+        # trajectoires (class editFzp)
+        self.pathOutputVehicles=            self.folder_output+"trajectoires.csv"
+        self.pathFzp                        =self.folder_output+"trajectoiresFzp.fzp"
 
         self.pathConfigOutput=              self.folder_output+self.__getValType("urls","url","config","file")+".xml"
 
         self.pathLog                        =self.folder_output + self.__getValType("urls","url","scenario","dir")+".md"
-        self.pathTraj                       =self.folder_output+"traj/"
-        self.pathDri                        =self.folder_output+"dri/"
-        self.gen=                           self.pathAbs+self.__getValType("urls","url","dir_gen","dir")+"/"
-        self.pathTrajMerged                 =self.folder_output+"trajectoires.csv"
-        self.pathFzp                        =self.folder_output+"trajectoiresFzp.fzp"
+        self.gen                            =self.pathAbs+self.__getValType("urls","url","dir_gen","dir")+"/"
 
+        # dictionary (class editFzp)
         self.pathDictVehicles               =self.folder_output+"dictVehicles.pkl"
-        self.pathDictVehiclesPhem           =self.folder_output+"dictVehiclesPhem.pkl"
+
+
+
+
+
+        # deprecated
+        self.pathTraj                       =self.folder_output+"traj/"                 # deprecated
+        self.pathDri                        =self.folder_output+"dri/"                  # deprecated
+        self.pathDictVehiclesPhem           =self.folder_output+"dictVehiclesPhem.pkl"  # deprecated
+        self.pathTrajMerged                 =self.folder_output+"trajectoires.csv"      # deprecated
 
 
     def setTools(self,tools):               self.tools=tools
 
     def __getValType(self,name_root,name_tag,name,type):
-        tag_root=self.__data.find(name_root)
-        for e in tag_root.iter(name_tag):
-            if e.get("name")==name and e.get("type")==type: return e.text.replace(" ","")
-        self.logger.error(cl=self,method=sys._getframe(),message="no value for "+name_root+", "+name_tag+", "+type)
-
+        try:
+            tag_root=self.__data.find(name_root)
+            for e in tag_root.iter(name_tag):
+                if e.get("name")==name and e.get("type")==type: return e.text.replace(" ","")
+        except AttributeError:
+            self.logger.warning(cl=self,method=sys._getframe(),message="no value for "+name_root+", "+name_tag+", "+type,doQuit= False,doReturn=False)
+            return ""
     def getPathAbs(self): return self.pathAbs
 
     def getNameScenario(self):  return self.__getValType("urls","url","scenario","dir")
