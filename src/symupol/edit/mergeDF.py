@@ -19,39 +19,26 @@ class MergeDF:
 
     def mergeDF(self):
         if self.__run:
-            self.__logger.log(cl=self,method=sys._getframe(),message="start merge databases")
+            self.__logger.log(cl=self,method=sys._getframe(),message="start merge dataframes")
             # TODO add assert exist file 1 and 2
 
-            print ("start to read")
-            df_phem=pd.read_csv(filepath_or_buffer=self.__inputMod,sep=";")
-            df_traj=pd.read_csv(filepath_or_buffer=self.__inputCsv,sep=";")
-            print (df_phem,df_traj)
-            # df_phem.set_index("id")
+            self.__logger.log(cl=self,method=sys._getframe(),message="start read DF")
 
-            # df_traj.set_index("id")
+            df_phem=pd.read_csv(filepath_or_buffer=self.__inputMod,sep=";")
+            df_traj=pd.read_csv(filepath_or_buffer=self.__inputCsv,sep=";") # print (df_phem,df_traj)
             lim=100000000000000000000000000
             df_traj=df_traj[:lim]
             df_phem=df_phem[:lim]
 
-            print ("start to merge")
-            df3=pd.merge(df_traj,df_phem,on=["id"],how="outer")
+            self.__logger.log(cl=self,method=sys._getframe(),message="start  merge")
+            df_merged=pd.merge(df_traj,df_phem,on=['t','id'],how="outer")
+            self.__logger.log(cl=self,method=sys._getframe(),message="finish merge")
 
-            #            df3=pd.merge(df_traj,df_phem,on=['id',"t"],how="outer")
-            print ("finish to merge")
+            # print (df3)
+            self.__logger.log(cl=self,method=sys._getframe(),message="start  store DF")
+            df_merged.to_csv(path_or_buf=self.__outputCsv,sep=";")
+            self.__logger.log(cl=self,method=sys._getframe(),message="finish store DF")
 
-            print (df3)
-            print ("start to store")
-            df3.to_csv(path_or_buf=self.__outputCsv,sep=";")
-
-            # df_concat=pd.concat([df_phem,df_traj])
-            # print (df_concat)
-
-            # df_merged=pd.merge(df_phem,df_traj,on="id",how="inner")
-            # print(df_merged)
-            # pd.df_merged.to_csv(path_or_buf=self.__outputCsv,sep=";")
-
-            self.__logger.log(cl=self,method=sys._getframe(),message="finish merge databases")
-
-
+            self.__logger.log(cl=self,method=sys._getframe(),message="finish merge dataframes")
 
     def __getSplitStr(self,input,pos):    return input[pos].split(":")[1].replace(" ","")

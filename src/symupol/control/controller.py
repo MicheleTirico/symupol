@@ -1,6 +1,5 @@
 import sys
 import os
-from symupy.runtime.api import Simulator, Simulation
 import glob
 
 class Controller:
@@ -9,6 +8,7 @@ class Controller:
         self.__config.logger.log(cl=self,method=sys._getframe(),message="init controller")
 
     def initSymupy(self):
+        from symupy.runtime.api import Simulator, Simulation
         self.__config.logger.log(cl=self,method=sys._getframe(),message="init symupy")
         self.__config.logger.log(cl=self,method=sys._getframe(),message="set scenario symupy")
         scenario = os.path.abspath(self.__config.setupTmp)

@@ -31,58 +31,14 @@ class CreateCsvFromMod:
                         writer_output=csv.writer(f_output,delimiter=";")
                         fileInfo=[]                                                                                         # remove early lines
                         for i in range (5):fileInfo.append(next(f_input))
-                        id=0
-                        idInt=0
+                        id=0#                        idInt=0
                         exportFirstHeader=False
                         for line in reader_input:
                             if "VehNr" in line[0]:
-                                # TEST
-                                # TEST
-                                # TEST
-                                # TEST
-                                # TEST
-                                # TEST
-                                # TEST
-                                # TEST
-                                # TEST
-                                # TEST
-                                # TEST
-                                # TEST
-                                # TEST
-                                # TEST
-                                # TEST
-                                # TEST
-                                # TEST
-                                # TEST
-                                # TEST
-                                # TEST
-                                # TEST
-                                # TEST
-                                # TEST
-                                # TEST
-                                # TEST
-                                # TEST
-                                # TEST
-                                # TEST
-                                # TEST
-                                # TEST
-                                # TEST
-                                # TEST
-                                # TEST
-                                # TEST
-                                # TEST
-                                # TEST
-                                # TEST
-                                # TEST
-                                # TEST
-                                #id=str(self.__getSplitStr(line,0))
-                                idInt+=1
-                                id=str(idInt)
+                                id=str(self.__getSplitStr(line,0))                          #id=str(idInt)    idInt+=1
                                 gen=str(self.__getSplitStr(line,1))
-                            elif line[0]!="time" and line[0]!="[s]":
-                                # t=int(round(float(line[0])))
+                            elif line[0]!="time" and line[0]!="[s]":                                # t=int(round(float(line[0])))
                                 t=float(mt.floor(float(line[0])))
-                                # print (t)
                                 line+=[id,gen,t]
                                 writer_output.writerow(line)
                             elif exportFirstHeader==False:
