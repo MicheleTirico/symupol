@@ -1,12 +1,11 @@
-from symupol.edit.createCsvFromMod import CreateCsvFromMod
-from symupol.edit.mergeDF import MergeDF
 from symupol.control.logger import Logger
 from symupol.control.config import Config
 from symupol.control.controller import Controller
 from symupol.control.tools import Tools
+from symupol.edit.editFzp import EditFzp
+from symupol.edit.links import Links
 
 test_delete_files=False
-runEditFzp=True
 pathconfig="/home/mt_licit/project/symupol/scenarios/test_grid_01/config.xml"
 
 # init config
@@ -34,16 +33,13 @@ logger.initStoreLog()
 logger.storeFile()
 controller.copyToTmp(True) # copy the setup to the .tmp folder
 
-# create csv from mod
-ccfm=CreateCsvFromMod(config=config,run=True)
-ccfm.setPathInputMod(path="/home/mt_licit/project/symupol/scenarios/test_grid_01/grid_100.mod")
-ccfm.setPathOutputCsv(path="/home/mt_licit/project/symupol/outputs/test_grid_01/grid_100.csv")
-ccfm.createCsv(runIfExist=False)
+# create Links
+links=Links(config=config,run=True)
+links.setInputXml(path="/media/mt_licit/data/licit_lab_dropbox/Michele Tirico/project/symupol/scenarios/test_grid_01/5x5grid.xml")
+links.setOutputCsv(path="/media/mt_licit/data/licit_lab_dropbox/Michele Tirico/project/symupol/outputs/test_grid_01/links.csv")
+links.setInputTrajectories(path="/media/mt_licit/data/licit_lab_dropbox/Michele Tirico/project/symupol/outputs/test_grid_01/trajectoires.csv")
 
-# merge DF
-mdf=MergeDF(config=config,run=True)
-mdf.setPathInputMod(path="/home/mt_licit/project/symupol/outputs/test_grid_01/grid_100.csv")
-mdf.setPathInputCsv(path="/home/mt_licit/project/symupol/outputs/test_grid_01/trajectoires.csv")
-# mdf.setPathOutputCsv(path="/home/mt_licit/project/symupol/outputs/test_grid_01/merged.csv")
-mdf.mergeDF(comuteIfExist=True,removeLines=True)
+links.createCsv()
+links.addLengthTotrajectories()
+
 

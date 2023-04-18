@@ -1,4 +1,5 @@
 import xml.etree.ElementTree as ET
+import glob
 import sys
 
 class Config:
@@ -31,11 +32,9 @@ class Config:
 
         self.setupTmp=                      self.tmp+self.__getValType("urls","url","setup","file")+".xml"
         self.outputTmp=                     self.tmp+"/OUT1/"
-        self.outputPhem=                    self.folder_output+"phem/"
-        self.outputPhemMod=                 self.folder_output+"phem/"+"tmp_400.mod"       # TODO: set the name file
+#        self.outputPhem=                    self.folder_output+"phem/"
+#        self.outputPhemMod=                 self.folder_output+"phem/"+"tmp_400.mod"       # TODO: set the name file
         self.pathOutputSymupy               =self.folder_output+self.__getValType("urls","url","scenario","dir")+"_output_sy.xml"
-
-        self.outputPhemDF                   =self.folder_output+"outputPhemDF.csv"
 
         # trajectoires (class editFzp)
         self.pathOutputVehicles=            self.folder_output+"trajectoires.csv"
@@ -49,16 +48,19 @@ class Config:
         # dictionary (class editFzp)
         self.pathDictVehicles               =self.folder_output+"dictVehicles.pkl"
 
-
-
-
+        self.pathOutputMod                  =None
+        self.pathOutputMergedTmp            =self.tmp+"merged.csv"
+        self.pathOutputMerged               =self.folder_output+"merged.csv"
 
         # deprecated
+        self.outputPhemDF                   =self.folder_output+"outputPhemDF.csv"      # deprecated
         self.pathTraj                       =self.folder_output+"traj/"                 # deprecated
         self.pathDri                        =self.folder_output+"dri/"                  # deprecated
         self.pathDictVehiclesPhem           =self.folder_output+"dictVehiclesPhem.pkl"  # deprecated
         self.pathTrajMerged                 =self.folder_output+"trajectoires.csv"      # deprecated
 
+
+    def getFileExtention(self,path,ext):        return glob.glob(path+"*"+ext)
 
     def setTools(self,tools):               self.tools=tools
 

@@ -43,6 +43,12 @@ class Controller:
         if run:
             os.system("cp "+ self.__config.setup + " "+self.__config.setupTmp)
 
+    def copyFiles(self,pathsIn,pathsOut):
+        self.__config.logger.log(cl=self,method=sys._getframe(),message="copy list of files")
+        for i in range(len(pathsIn)):
+            os.system("cp "+pathsIn[i]+" "+ pathsOut[i])
+
+
     def copyToOutput(self,run):
         if run:
             os.system("cp "+ self.__config.setupTmp+" "+self.__config.folder_output)
