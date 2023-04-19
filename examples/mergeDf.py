@@ -43,7 +43,7 @@ ccfm.createCsv(runIfExist=False)
 # merge DF
 mdf=MergeDF(config=config,run=True)
 mdf.setPathInputMod(path="/home/mt_licit/project/symupol/outputs/test_grid_01/grid_100.csv")
-mdf.setPathInputCsv(path="/home/mt_licit/project/symupol/outputs/test_grid_01/trajectoires.csv")
+mdf.setPathInputCsv(path="/home/mt_licit/project/symupol/outputs/test_grid_01/trajectoires2.csv")
 # mdf.setPathOutputCsv(path="/home/mt_licit/project/symupol/outputs/test_grid_01/merged.csv")
 mdf.mergeDF(comuteIfExist=True,removeLines=True)
 

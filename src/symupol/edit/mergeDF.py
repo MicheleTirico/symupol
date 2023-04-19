@@ -43,7 +43,7 @@ class MergeDF:
                 self.__logger.log(cl=self,method=sys._getframe(),message="finish merge dataframes")
             else:
                 self.__logger.log(cl=self,method=sys._getframe(),message="file exist. We do not compute merge")
-        print (self.__outputCsv)
+
         self.__removeNotCompleteLines(removeLines)
         self.__logger.log(cl=self,method=sys._getframe(),message="finish merge dataframes")
 
