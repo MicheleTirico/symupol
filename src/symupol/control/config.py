@@ -52,17 +52,35 @@ class Config:
         self.pathOutputMergedTmp            =self.tmp+"merged.csv"
         self.pathOutputMerged               =self.folder_output+"merged.csv"
 
+    # analysis
+        self.pathAbstractDF=                self.folder_output+"abstractDF.csv"
+        # parameters
+        self.paramAnalysisInterval=         self.__getValType("analysis","parameter","interval","integer")
+        self.paramAnalysisListPollutants=   self.__getListValues("analysis","parameter","pollutants","list")
+        self.paramAnalysisNumberOfSplit=    self.__getValType("analysis","parameter","numberOfSplit","integer")
+
         # deprecated
         self.outputPhemDF                   =self.folder_output+"outputPhemDF.csv"      # deprecated
         self.pathTraj                       =self.folder_output+"traj/"                 # deprecated
         self.pathDri                        =self.folder_output+"dri/"                  # deprecated
         self.pathDictVehiclesPhem           =self.folder_output+"dictVehiclesPhem.pkl"  # deprecated
-        self.pathTrajMerged                 =self.folder_output+"trajectoires.csv"      # deprecated
+        # self.pathTrajMerged                 =self.folder_output+"trajectoires.csv"      # deprecated
 
 
     def getFileExtention(self,path,ext):        return glob.glob(path+"*"+ext)
 
     def setTools(self,tools):               self.tools=tools
+
+    def __getListValues(self,name_root,name_tag,name,type):
+        try:
+            tag_root=self.__data.find(name_root)
+            for e in tag_root.iter(name_tag):
+                if e.get("name")==name and e.get("type")==type:
+                    a=e.text.replace(" ","")
+                    return a.split(",")
+        except AttributeError:
+            self.logger.warning(cl=self,method=sys._getframe(),message="no value for "+name_root+", "+name_tag+", "+type,doQuit= False,doReturn=False)
+            return ""
 
     def __getValType(self,name_root,name_tag,name,type):
         try:
@@ -75,6 +93,7 @@ class Config:
     def getPathAbs(self): return self.pathAbs
 
     def getNameScenario(self):  return self.__getValType("urls","url","scenario","dir")
+
 def __test (run):
     if run:
         url="/home/mt_licit/project/symupol/scenarios/test_grid_01/config.xml"
