@@ -102,3 +102,10 @@ class Controller:
         self.__config.logger.log(cl=self,method=sys._getframe(),message="start edit output symuvia")
         self.__config.logger.warning(cl=self,method=sys._getframe(),message="TODO: integrate classes in controller",doQuit=False,doReturn=False)
 
+
+    def removeIfExist(self,path):
+
+        if os.path.exists(path):
+            self.__config.logger.log(cl=self,method=sys._getframe(),message="remove file: "+path)
+            os.system("rm "+path)
+

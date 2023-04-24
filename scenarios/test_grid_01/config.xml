@@ -44,8 +44,8 @@
     </scenario>
 
     <analysis>
-        <parameter name="interval" type="integer">900</parameter>                                                       <!-- interval in seconds (tip: 360, 900 and 3600) -->
-        <parameter name="pollutants" type="list"> NOx_TP, CO_TP</parameter>                                             <!-- "," for split elements in a list -->
-        <parameter name="numberOfSplit" type="integer">4 </parameter>                                                   <!-- number of segments to split the link -->
+        <parameter name="timeSlots" type="list">60,360,900</parameter>                                                       <!-- interval in seconds (tip: 360, 900 and 3600) -->
+        <parameter name="pollutants" type="list"> NOx_TP</parameter>                                             <!-- "," for split elements in a list -->
+        <parameter name="numberOfSplit" type="list">4,5,10 </parameter>                                                   <!-- number of segments to split the link -->
     </analysis>
 </data>

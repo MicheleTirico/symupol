@@ -55,9 +55,9 @@ class Config:
     # analysis
         self.pathAbstractDF=                self.folder_output+"abstractDF.csv"
         # parameters
-        self.paramAnalysisInterval=         self.__getValType("analysis","parameter","interval","integer")
+        self.paramAnalysisListTimeSlot=     self.__getListValues("analysis","parameter","timeSlots","list")
         self.paramAnalysisListPollutants=   self.__getListValues("analysis","parameter","pollutants","list")
-        self.paramAnalysisNumberOfSplit=    self.__getValType("analysis","parameter","numberOfSplit","integer")
+        self.paramAnalysisNumberOfSplit=    self.__getListValues("analysis","parameter","numberOfSplit","list")
 
         # deprecated
         self.outputPhemDF                   =self.folder_output+"outputPhemDF.csv"      # deprecated
@@ -93,6 +93,7 @@ class Config:
     def getPathAbs(self): return self.pathAbs
 
     def getNameScenario(self):  return self.__getValType("urls","url","scenario","dir")
+
 
 def __test (run):
     if run:
