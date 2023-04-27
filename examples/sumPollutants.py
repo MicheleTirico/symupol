@@ -1,9 +1,6 @@
 from symupol.analysis.abstractDF import AbstractDF
 from symupol.analysis.analysis import Analysis
-from symupol.analysis.completeTable import CompleteTable
 from symupol.analysis.sumPollutants import SumPollutants
-from symupol.edit.createCsvFromMod import CreateCsvFromMod
-from symupol.edit.mergeDF import MergeDF
 from symupol.control.logger import Logger
 from symupol.control.config import Config
 from symupol.control.controller import Controller
@@ -11,6 +8,7 @@ from symupol.control.tools import Tools
 
 test_delete_files=False
 runEditFzp=True
+# pathconfig="/home/mt_licit/project/symupol/scenarios/lafayette/config.xml"
 pathconfig="/home/mt_licit/project/symupol/scenarios/test_grid_01/config.xml"
 
 # init config
@@ -41,6 +39,7 @@ controller.copyToTmp(True) # copy the setup to the .tmp folder
 # analysis
 a=Analysis(config=config,controller=controller)
 adv=AbstractDF(analysis=a)
-adv.getAbstractDF(storeAbstractDF=False,readIfExist=True) # todo readIfExist
+adv.getAbstractDF(storeAbstractDF=True,readIfExist=True) # todo readIfExist
 sp=SumPollutants(analysis=a)
 sp.compute()
+sp.addIdSplit(run=True)

@@ -1,8 +1,9 @@
 import sys
 import csv
 import xml.etree.ElementTree as ET
+import os
 
-class Links:
+class LinksCsv:
     def __init__(self,config,run):
         self.__config=config
         self.__run=run
@@ -31,14 +32,15 @@ class Links:
         reseau=reseaux.find("RESEAU")
         troncons=reseau.find("TRONCONS")
 
-#        if os.path.exists(self.__outputCsv):            os.system("rm "+self.__outputCsv) # remove file if exist
-        header="id;in;out;coord_in,coord_out,width,id_opp_link,length\n"
+        if os.path.exists(self.__outputCsv):            os.system("rm "+self.__outputCsv) # remove file if exist
+        headerFr="id;id_eltamont;id_eltaval;extremite_amont;extremite_aval"
+        headerList=headerFr.split(";")
+        header="id;in;out;coord_in;coord_out;length\n"
         with open(self.__outputCsv, "w") as f:
             f.write(header)
             for tron in troncons.iter():
-                if len(tron.attrib.values())!=0:
+                if len(tron.attrib.values())!=0 and tron.tag=="TRONCON":
                     dict=tron.attrib               # handle opposite links
-                    if "id_troncon_oppose" not in dict.keys():dict["id_troncon_oppose"]=""
                     l=dict.values()
                     id=tron.attrib["id"]
                     link=Link(id)
@@ -48,8 +50,10 @@ class Links:
                     coord_out=(float(coord_out[0]),float(coord_out[1]))
                     distX,distY=abs(coord_in[0]-coord_out[0]),abs(coord_in[1]-coord_out[1])
                     length=pow(pow(distX,2)+pow(distY,2),.5)
-                    v=";".join(l)+";"+str(length)+"\n"
-                    f.write(v)
+                    v2=[]
+                    for i in headerList:    v2.append(tron.attrib[i])
+                    v2.append(str(length))
+                    f.write(";".join(v2)+"\n")
                     dict["length"]=length
                     link.setListAttribs(dict)
                     self.__links[id]=link
@@ -94,6 +98,7 @@ class Link:
     def __init__(self,id):
         self.__id=id
         self.__attribs={}
+
     def setId(self,id): self.__id=id
 
     def setAttrib(self,attribName,attribVal):        self.__attribs[attribName]=attribVal

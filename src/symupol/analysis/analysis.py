@@ -11,7 +11,7 @@ class Analysis():
         self.logger=self.config.logger
         self.logger.log(cl=self,method=sys._getframe(),message="initialize Analysis")
 
-        self.abstractDF=""
+        # self.abstractDF=""
 
         self.pathTableMerged=    self.config.pathOutputMerged
         self.pathAbstractDF=     self.config.pathAbstractDF

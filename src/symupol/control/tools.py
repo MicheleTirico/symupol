@@ -35,3 +35,16 @@ class Tools:
             with open(pathOutput, 'rb') as fp:  return pickle.load(fp)
         except AssertionError:
             self.logger.warning(cl=self,method=sys._getframe(),message="file " +pathOutput+" cannot be open. Is the extention .pkl?",doQuit=False,doReturn=False)
+
+    def getDictPosNodes(self,df):
+        # get list of nodes
+        pos={}
+        for row in df.iterrows():
+            n_in=row[1][1]
+            if n_in not in pos.keys():   pos[n_in]=tuple(str(row[1][3]).split(" "))
+            n_out=row[1][2]
+            if n_out not in pos.keys():   pos[n_out]=tuple(str(row[1][4]).split(" "))
+        return pos
+
+    def getNameAndExtentionFromPath(self,path):
+        return os.path.splitext(path)
