@@ -34,14 +34,10 @@ logger.initStoreLog()
 logger.storeFile()
 controller.copyToTmp(True) # copy the setup to the .tmp folder
 
-pathTsSl="/media/mt_licit/data/licit_lab_dropbox/Michele Tirico/project/symupol/outputs/lafayette/lafayette_timeSlot-60_splitLink-5.csv"
 pathLinks="/media/mt_licit/data/licit_lab_dropbox/Michele Tirico/project/symupol/outputs/lafayette/links.csv"
 # init graph
 graph=Graph(config=config,controller=controller)
-graph.setPathInputTsSl(path=pathTsSl)
 graph.setPathInputLinks(path=pathLinks)
-graph.setPathOutputNx(path="/media/mt_licit/data/licit_lab_dropbox/Michele Tirico/project/symupol/outputs/lafayette/test_cast.nx")
-graph.setPathOutputJpg(path="/media/mt_licit/data/licit_lab_dropbox/Michele Tirico/project/symupol/outputs/lafayette/test_cast.jpg")
 graph.initDf(path=None)
 graph.initGraph()
 

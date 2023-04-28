@@ -55,26 +55,16 @@ class SumPollutants():
             self.__analysis.logger.log(cl=self,method=sys._getframe(),message="start  add split link id")
             for path in self.__pathsOfOutputs:
                 self.__analysis.logger.log(cl=self,method=sys._getframe(),message="add split link id for table: "+os.path.splitext(path)[0]+os.path.splitext(path)[1])
-                # print (df)
-                listOfSplits=["0005","0010"]
-                test=False
-                pos=0
-                pathOk=""
+                listOfSplits=["{:0>4}".format(i) for i in self.__analysis.config.paramAnalysisNumberOfSplit]            # get the right file
+                test,pos,pathOk=False,0,""
                 while test==False:
                     if "ns-"+listOfSplits[pos] in path:
-                        test=True
-                        pathOk=path
-                        split="ns-"+listOfSplits[pos]
+                        test,pathOk,split=True,path,"ns-"+listOfSplits[pos]
                     pos+=1
-                print (pathOk,split)
                 df=pd.read_csv(filepath_or_buffer=pathOk,sep=";")
-                print (df[split])
-                # df[split]=2.2
                 df["id_split"]=df["tron"]+"_split-"+df[split].astype(str)
-                print (df)
                 df.to_csv(pathOk,sep=";")
             self.__analysis.logger.log(cl=self,method=sys._getframe(),message="finish add split link id")
-
     def __getGroupby(self,vals):
         return self.__analysis.abstractDF.groupby(vals).sum()
     def __setTimeSlots(self,timeSlot):

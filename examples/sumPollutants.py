@@ -39,7 +39,7 @@ controller.copyToTmp(True) # copy the setup to the .tmp folder
 # analysis
 a=Analysis(config=config,controller=controller)
 adv=AbstractDF(analysis=a)
-adv.getAbstractDF(storeAbstractDF=True,readIfExist=True) # todo readIfExist
+adv.getAbstractDF(storeAbstractDF=False,readIfExist=True) # todo readIfExist
 sp=SumPollutants(analysis=a)
 sp.compute()
 sp.addIdSplit(run=True)
