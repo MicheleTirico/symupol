@@ -58,7 +58,7 @@ class Config:
         self.paramAnalysisListTimeSlot=     self.__getListValues("analysis","parameter","timeSlots","list")
         self.paramAnalysisListPollutants=   self.__getListValues("analysis","parameter","pollutants","list")
         self.paramAnalysisNumberOfSplit=    self.__getListValues("analysis","parameter","numberOfSplit","list")
-
+        self.paramAnalysisLengthMaxSplit=   self.__getListValues("analysis","parameter","lengthMaxSplit","list")
         # deprecated
         self.outputPhemDF                   =self.folder_output+"outputPhemDF.csv"      # deprecated
         self.pathTraj                       =self.folder_output+"traj/"                 # deprecated

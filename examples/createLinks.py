@@ -47,7 +47,7 @@ links.setOutputTrajectories(path="/media/mt_licit/data/licit_lab_dropbox/Michele
 # links.setInputTrajectories(path="/media/mt_licit/data/licit_lab_dropbox/Michele Tirico/project/symupol/outputs/test_grid_01/trajectoires.csv")
 # links.setOutputTrajectories(path="/media/mt_licit/data/licit_lab_dropbox/Michele Tirico/project/symupol/outputs/test_grid_01/trajectoires2.csv")
 
-links.createCsv()
+# links.createCsv()
 links.addLengthTotrajectories(run=True)
 
 

@@ -54,7 +54,7 @@ graph.getInfo()
 
 
 # export
-graph.plotGeoDf(run=False)
-graph.saveGeoDfJpg(run=False)
+graph.plotGeoDf(run=True)
+graph.saveGeoDfJpg(run=True)
 # graph.saveGeoDf(path="/media/mt_licit/data/licit_lab_dropbox/Michele Tirico/project/symupol/outputs/lafayette/test_cast.geojson")
 # ggpdf.test()

@@ -50,6 +50,41 @@ class SumPollutants():
 
         self.__analysis.logger.log(cl=self,method=sys._getframe(),message="finish sum pollutants")
 
+    def computeMaxLen(self):
+        self.__analysis.logger.log(cl=self,method=sys._getframe(),message="start  sum pollutants")
+        try:                                                                                                            # assert Abstract DF was created
+            assert self.__analysis.existAbstractDF==True
+        #    print ("--------------------------- abstract df -----------------------------------\n",self.__analysis.abstractDF)
+        except AssertionError:
+            self.__analysis.config.logger.error(cl=self,method=sys._getframe(),message="Abstract DF not created",error=AssertionError)
+
+        self.__dfPerTimeStep=self.__getSumPerTimeStep()
+        pathTimeStep=self.__pathInitOutput+"_sumPerInstant.csv"
+        self.__analysis.controller.removeIfExist(path=pathTimeStep)
+        self.__dfPerTimeStep.to_csv(pathTimeStep, header=True)
+
+        #        print ("--------------------------- df per instant -----------------------------------\n",self.__dfPerTimeStep)
+
+        for ts in self.__analysis.config.paramAnalysisListTimeSlot:
+            for maxLen in self.__analysis.config.paramAnalysisLengthMaxSplit:
+                split=2
+                self.__analysis.logger.log(cl=self,method=sys._getframe(),message="start  sum pollutants for time slot: "+ts+" and link splitted in: "+split)
+
+                # create df
+                df1=self.__getGroupby(vals=["tron","ts-"+"{:0>4}".format(ts),"ns-"+"{:0>4}".format(split)])
+                df1=df1[["FC","CO2_TP","NOx_TP","CO_TP","HC_TP","PM_TP","PN_TP"]]
+                self.__analysis.logger.log(cl=self,method=sys._getframe(),message="finish to create dataframe for time slot: "+ts+" and link splitted in: "+split)
+
+                # store file
+                path=self.__pathInitOutput+"_ts-"+"{:0>4}".format(ts)+"_ns-"+"{:0>4}".format(split)+".csv"
+                self.__analysis.controller.removeIfExist(path)
+                df1.to_csv(path,sep=";")
+                self.__pathsOfOutputs.append(path)
+                self.__analysis.logger.log(cl=self,method=sys._getframe(),message="finish to store file: "+path)
+                self.__analysis.logger.log(cl=self,method=sys._getframe(),message="finish sum pollutants for time slot: "+ts+" and link splitted in: "+split)
+
+        self.__analysis.logger.log(cl=self,method=sys._getframe(),message="finish sum pollutants")
+
     def addIdSplit(self,run):
         if run:
             self.__analysis.logger.log(cl=self,method=sys._getframe(),message="start  add split link id")

@@ -2,6 +2,11 @@ import sys
 import csv
 import xml.etree.ElementTree as ET
 import os
+from symupol.control import tools_shapely
+from shapely.geometry import LineString, Point
+
+from symupol.control.tools_shapely import splitLineStringDistance
+
 
 class Links:
     def __init__(self,graph):
@@ -13,6 +18,7 @@ class Links:
         self.__outputTrajectories="" #TODO
         self.__inputXml="" #TODO
         self.__inputTrajectories="" #TODO
+        self.__outputSplitLinks=""  #TODO
 
     def setOutputCsv(self,path):            self.__outputCsv=path
 
@@ -21,6 +27,8 @@ class Links:
     def setInputXml(self,path):             self.__inputXml=path
 
     def setInputTrajectories(self,path):    self.__inputTrajectories=path
+
+    def setOutputSplitLinks(self,path):     self.__outputSplitLinks=path
 
     def createCsv(self,run):
         if run:
@@ -105,44 +113,108 @@ class Links:
             #self.graph.config.logger.warning(cl=self,method=sys._getframe(),message="link not founded",doQuit=False,doReturn=False)
             return None
 
+    def __getMultiLineString(self):
+        self.graph.logger.log(cl=self,method=sys._getframe(),message="start  create multi LineString")
+        multiLineString={}
+        with open (self.__outputCsv, "r") as f_read:
+            next(f_read).replace("\n","")
+            for row in  csv.reader(f_read):
+                vals=row[0].split(";")
+                coord_in,coord_out,coord_int_points=vals[3].split(" "), vals[4].split(" "), vals[5].split(" ")
+                coord_int_points.remove('') if '' in coord_int_points else None
+                list_int_points=[(float(coord_int_points[i]),float(coord_int_points[i + 1])) for i in range (0,len(coord_int_points)-1,2)]
+                point_in=Point(float(coord_in[0]),float(coord_in[1]))
+                point_out=Point(float(coord_out[0]),float(coord_out[1]))
+
+                l=[point_in]+[Point(i) for i in list_int_points]+[point_out]
+
+                line=LineString(l)
+                id=vals[0].split(" ")[0]
+                multiLineString[id]=line
+        self.graph.logger.log(cl=self,method=sys._getframe(),message="finish create multi LineString")
+        return multiLineString
+
     def splitLinks(self,run):
         if run:
             self.graph.logger.log(cl=self,method=sys._getframe(),message="start split links")
-            print (self.__outputCsv)
-            testPath="/media/mt_licit/data/licit_lab_dropbox/Michele Tirico/project/symupol/outputs/lafayette/test.csv"
-            with open (self.__outputCsv, "r") as f_read:
-                header=next(f_read).replace("\n","")
-                with open (testPath, "w") as f_write:
-                    header_write=header+";id_split\n"
-                    # print (header_write,type(header_write))
-                    f_write.write(header_write)
-                    b=0
-                    for row in  csv.reader(f_read):
+            mls=self.__getMultiLineString()
+            # testPath="/media/mt_licit/data/licit_lab_dropbox/Michele Tirico/project/symupol/outputs/lafayette/test_split.csv"
+            for maxLen in self.graph.config.paramAnalysisLengthMaxSplit:
+                with open (self.graph.config.folder_output+"link_splitted_mls_{:0>4}.csv".format(maxLen), "w") as f_write:
+                    self.graph.logger.log(cl=self,method=sys._getframe(),message="split links by max length of: "+maxLen)
 
-                        vals=row[0].split(";")
-                        c=";".join(vals)+";"+str(b)+"\n"
-                        print (c)
-                        f_write.write(c)
-                        b+=1
-                        int_points=vals[5].split(" ")
-                        int_points.remove('') if '' in int_points else None
-                        list_int_points=[]
-                        for i in range (0,len(int_points)-1,2):
-                            list_int_points.append((int_points[i],int_points[i + 1]))
-
-
-
-
-
-
-
-
-
+                    header="id;in;out;coord_in;coord_out;int_points;length;id_split\n"
+                    f_write.write(header)
+                    for id,lineString in mls.items():
+                        nSplit=lineString.length//float(maxLen)+1
+                        splitLine=tools_shapely.splitLineStringNsplit(lineString,nSplit,list())
+                        if splitLine!=None:
+                            tools_shapely.removeShortLines(splitLine,0.001)
+                            i=1
+                            for splittedLine in splitLine:
+                                id_split=id+"_{:0>4}".format(i)
+                                vals=[id,
+                                      "-",
+                                      "-",
+                                      str(splittedLine.coords[0][0])+" "+str(splittedLine.coords[0][1]),
+                                      str(splittedLine.coords[1][0])+" "+str(splittedLine.coords[1][1]),
+                                      str(splittedLine.length),
+                                      id_split
+                                ]
+                                f_write.write(";".join(vals)+"\n")
+                                i+=1
+                        #
+                        # else:
+                        #     print ("none")
 
         self.graph.logger.log(cl=self,method=sys._getframe(),message="start split finish")
 
+    # def splitLinks(self,run):
+    #     if run:
+    #         self.graph.logger.log(cl=self,method=sys._getframe(),message="start split links")
+    #         print (self.__outputCsv)
+    #         testPath="/media/mt_licit/data/licit_lab_dropbox/Michele Tirico/project/symupol/outputs/lafayette/test.csv"
+    #         with open (self.__outputCsv, "r") as f_read:
+    #             header=next(f_read).replace("\n","")
+    #             with open (testPath, "w") as f_write:
+    #                 header_write=header+";id_split\n"
+    #                 print (header_write,type(header_write))
+    #                 f_write.write(header_write)
+    #                 b=0
+    #                 for row in  csv.reader(f_read):
+    #
+    #                     vals=row[0].split(";")
+    #
+    #                     int_points=vals[5].split(" ")
+    #                     int_points.remove('') if '' in int_points else None
+    #                     list_int_points=[(int_points[i],int_points[i + 1]) for i in range (0,len(int_points)-1,2)]
+    #                     if len(list_int_points)>0:
+    #                         for i in range(len(list_int_points)):
+    #                             c=";".join(vals)+";"+vals[0]+"_{:0>3}".format(i+1)+"\n"
+    #
+    #                     else: c=";".join(vals)+";"+vals[0]+"_{:0>3}".format(0)+"\n"
+    #                     f_write.write(c)
+    #                     l=self.__getLineString(vals)
+    #
+    #
+    #
+    #
+    #
+    #
+    #
+    #     self.graph.logger.log(cl=self,method=sys._getframe(),message="start split finish")
 
 
+
+    def __getLineString(self,vals):
+        l=[]
+        l.append(tuple(vals[3].split(" ")))
+        int_points=vals[5].split(" ")
+        int_points.remove('') if '' in int_points else None
+        list_int_points=[(int_points[i],int_points[i + 1]) for i in range (0,len(int_points)-1,2)]
+        for i in list_int_points:l.append(i)
+        l.append(tuple(vals[4].split(" ")))
+        return l
 
 
         # for filename in os.listdir(self.graph.config.folder_output):

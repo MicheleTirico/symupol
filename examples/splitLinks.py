@@ -39,7 +39,7 @@ links.setInputXml(path="/media/mt_licit/data/licit_lab_dropbox/Michele Tirico/pr
 links.setOutputCsv(path="/media/mt_licit/data/licit_lab_dropbox/Michele Tirico/project/symupol/outputs/lafayette/links.csv")
 links.setInputTrajectories(path="/media/mt_licit/data/licit_lab_dropbox/Michele Tirico/project/symupol/outputs/lafayette/trajectoires.csv")
 links.setOutputTrajectories(path="/media/mt_licit/data/licit_lab_dropbox/Michele Tirico/project/symupol/outputs/lafayette/trajectoires2.csv")
-
+# links.setOutputSplitLinks(path="/media/mt_licit/data/licit_lab_dropbox/Michele Tirico/project/symupol/outputs/lafayette/links_splitted.csv")
 links.createCsv(run=False)
 links.addLengthTotrajectories(run=False)
 links.splitLinks(run=True)
