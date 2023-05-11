@@ -1,5 +1,6 @@
-from symupol.graph.graph import Graph
-from symupol.graph.computeGeoPandasDf import ComputeGeoPandasDf
+from symupol.analysis.abstractDF import AbstractDF
+from symupol.analysis.analysis import Analysis
+from symupol.analysis.sumPollutants import SumPollutants
 from symupol.control.logger import Logger
 from symupol.control.config import Config
 from symupol.control.controller import Controller
@@ -8,6 +9,7 @@ from symupol.control.tools import Tools
 test_delete_files=False
 runEditFzp=True
 pathconfig="/home/mt_licit/project/symupol/scenarios/lafayette/config.xml"
+# pathconfig="/home/mt_licit/project/symupol/scenarios/test_grid_01/config.xml"
 
 # init config
 config=Config(pathconfig)
@@ -34,23 +36,16 @@ logger.initStoreLog()
 logger.storeFile()
 controller.copyToTmp(True) # copy the setup to the .tmp folder
 
-pathLinks="/media/mt_licit/data/licit_lab_dropbox/Michele Tirico/project/symupol/outputs/lafayette/links.csv"
-# init graph
-graph=Graph(config=config,controller=controller)
-graph.setPathInputLinks(path=pathLinks)
-graph.initDf()
-graph.initGraph()
+# analysis
+a=Analysis(config=config,controller=controller)
+adv=AbstractDF(analysis=a)
+adv.setParams(addRelativePosition=True, addCountVehicles=True,addTimeSlots=True,addPosSegment=False)
+adv.getAbstractDF(storeAbstractDF=True,computeIfExist=True) # todo readIfExist
 
-# casting files
-ggpdf=ComputeGeoPandasDf(graph=graph)
-ggpdf.computeGenericGraph()
-graph.getInfo()
+sp=SumPollutants(analysis=a)
+# sp.compute()
+sp.computeMaxLen(run=True)
+sp.cleanDf(run=True)
+sp.addGeometryLinks(run=True)
+# sp.addIdSplit(run=True)
 
-#ggpdf.test()
-
-
-# export
-graph.plotGeoDf(run=False)
-graph.saveGeoDfJpg(run=False)
-# graph.saveGeoDf(path="/media/mt_licit/data/licit_lab_dropbox/Michele Tirico/project/symupol/outputs/lafayette/test_cast.geojson")
-# ggpdf.test()

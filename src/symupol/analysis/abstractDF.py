@@ -1,29 +1,46 @@
 import sys
 import pandas as pd
 import numpy as np
+import os
 
 class AbstractDF():
     def __init__(self,analysis):
         self.__analysis=analysis
 
-
-
+        self.__runAddRelativePosition=True
+        self.__runAddCountVehicles=True
+        self.__runAddTimeSlots=True
+        self.__runAddPosSegment=True
+        
         self.__analysis.logger.log(cl=self,method=sys._getframe(),message="initialize abstract DF")
 
     def setPathTableMerged(self,path):  self.__analysis.pathTableMerged=path
     def setPathAbstractDF(self,path):   self.__analysis.pathAbstractDF=path
 
-    def getAbstractDF(self,storeAbstractDF,readIfExist):        # TODO readIfExist
+    def getAbstractDF(self,storeAbstractDF,computeIfExist):        # TODO readIfExist
         # TODO add test read or create
-        self.__analysis.logger.log(cl=self,method=sys._getframe(),message="start  create abstract DF")
-        self.__analysis.existAbstractDF,self.__analysis.abstractDF=self.__createAbstractDF()
-        self.__addRelativePosition(run=True)
-        self.__addCountVehicles(run=True)
-        self.__addTimeSlots(run=True)
-        self.__addPosSegment(run=True)
-        self.__storeAbstractDF(storeAbstractDF=storeAbstractDF,df=self.__analysis.abstractDF)
-        self.__analysis.logger.log(cl=self,method=sys._getframe(),message="finish create abstract DF")
+        try:
+            if computeIfExist==False: assert os.path.exists(self.__analysis.pathAbstractDF)!=True
+            self.__analysis.logger.log(cl=self,method=sys._getframe(),message="abstract DF has not been created. Do it now. ")
+            self.__analysis.logger.log(cl=self,method=sys._getframe(),message="start  create abstract DF")
+            self.__analysis.existAbstractDF,self.__analysis.abstractDF=self.__createAbstractDF()
+            self.__addRelativePosition(run=self.__runAddRelativePosition)
+            self.__addCountVehicles(run=self.__runAddCountVehicles)
+            self.__addTimeSlots(run=self.__runAddTimeSlots)
+            self.__addPosSegment(run=self.__runAddPosSegment)
+            self.__storeAbstractDF(storeAbstractDF=storeAbstractDF,df=self.__analysis.abstractDF)
+            self.__analysis.logger.log(cl=self,method=sys._getframe(),message="finish create abstract DF")
 
+        except AssertionError:
+            self.__analysis.logger.log(cl=self,method=sys._getframe(),message="abstract DF exist. Do nothing")
+
+
+    def setParams (self,addRelativePosition, addCountVehicles,addTimeSlots,addPosSegment):
+        self.__runAddRelativePosition=addRelativePosition
+        self.__runAddCountVehicles=addCountVehicles
+        self.__runAddTimeSlots=addTimeSlots
+        self.__runAddPosSegment=addPosSegment
+        
     def __createAbstractDF(self):
         df1=pd.read_csv(filepath_or_buffer=self.__analysis.pathTableMerged,sep=";")
         data=df1[['t', 'id',"dst",'tron','type',"vit","z","length","FC","CO2_TP","NOx_TP","CO_TP","HC_TP","PM_TP","PN_TP"]]
@@ -63,5 +80,5 @@ class AbstractDF():
     def __storeAbstractDF(self,storeAbstractDF,df):
         if storeAbstractDF:
             self.__analysis.logger.log(cl=self,method=sys._getframe(),message="start  store abstract DF")
-            df.to_csv(self.__analysis.pathAbstractDF, header=True)
+            df.to_csv(self.__analysis.pathAbstractDF, header=True,sep=";")
             self.__analysis.logger.log(cl=self,method=sys._getframe(),message="finish store abstract DF")

@@ -24,7 +24,6 @@ class Graph():
         if self.G==None:            self.logger.warning(cl=self,method=sys._getframe(),message="None is returned as graph",doQuit=False,doReturn=False)
         return self.G
 
-
     # get list of nodes
     def getListNodes (self,df):    return self.config.tools.getDictPosNodes(df=df)
 
@@ -32,20 +31,11 @@ class Graph():
     def setPathInputLinks(self,path):   self.pathInputLinks=path
     def setPathOutputNx(self,path):       self.pathOutputNx=path
     def setPathOutputJpg(self,path):    self.pathOutputJpg=path
-    def initDf(self,path):
+    def initDf(self):
         try:
-            assert path!=None
-            self.df = pd.read_csv(path,sep=";")
+            assert self.pathInputLinks!=None
+            self.df = pd.read_csv(self.pathInputLinks,sep=";")
         except AssertionError:
             self.logger.warning(cl=self,method=sys._getframe(),message="path is not assigned manually. try with default path",doQuit=False,doReturn=False)
             self.df = pd.read_csv(self.pathInputLinks,sep=";")
-    def plotGeoDf(self,run):
-        if run:                 self.df_geo.plot()
 
-    def saveGeoDfJpg(self,run):
-        if run:                 plt.savefig(self.pathOutputJpg)
-
-    def saveGeoDf(self,path):
-        self.df_geo.to_file(path, driver='GeoJSON')
-
-    def getInfo(self):self.df_geo.info()

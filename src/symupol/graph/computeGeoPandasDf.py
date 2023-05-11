@@ -3,13 +3,15 @@ import pandas as pd
 from shapely.geometry import LineString,Point
 import geopandas as gpd
 import numpy as np
+import matplotlib.pyplot as plt
+
 
 class ComputeGeoPandasDf:
     def __init__(self,graph):
         self.__graph=graph
         self.__graph.logger.log(cl=self,method=sys._getframe(),message="initialize geopandas dataframe")
 
-    def compute(self):
+    def computeGenericGraph(self):
         self.__graph.logger.log(cl=self,method=sys._getframe(),message="start  geopandas dataframe")
 
         coord_in=self.__graph.df["coord_in"].str.split(" ").apply(pd.Series,1).astype("float64")
@@ -23,6 +25,34 @@ class ComputeGeoPandasDf:
 
         self.__graph.logger.log(cl=self,method=sys._getframe(),message="finish geopandas dataframe")
 
+    def computeSingleGraph(self,ts,lms):
+        self.__graph.logger.log(cl=self,method=sys._getframe(),message="compute the graph for time slot: "+str(ts)+" and max length of split of: "+str(lms))
+
+        # df1=pd.read_csv(filepath_or_buffer=path,sep=";")
+        print (self.__graph.df)
+        df1=self.__graph.df[self.__graph.df['ts-'+str(ts)] == 2]
+        print (df1)
+        coord_in=df1["coord_in"].str.split(" ").apply(pd.Series,1).astype("float64")
+        coord_out=df1["coord_out"].str.split(" ").apply(pd.Series,1).astype("float64")
+        # coord_int=df1["int_points"].str.split(" ").apply(pd.Series,1).astype("float64")
+
+        df1["n_in"] = list(zip(coord_in[0], coord_in[1]))
+        df1["n_out"] = list(zip(coord_out[0], coord_out[1]))
+        # df1["n_int"] = list(zip(coord_int[0], coord_int[1]))
+
+        df1['n_in_geometry'] = df1["n_in"].apply(lambda x: Point((x[0], x[1])))
+        df1['n_out_geometry'] = df1["n_out"].apply(lambda x: Point((x[0], x[1])))
+        # df1['n_inter_geometry']=df1["int_points"].apply(lambda x: Point((x[0], x[1])))
+        df1['Line_geometry'] = df1.apply(lambda x: LineString([x['n_in'], x['n_out']]), axis=1)        # nx.draw(G)
+
+        # df1['Line_geometry'] = df1.apply(lambda x: LineString([x['n_in'], x['n_int'], x['n_out']]), axis=1)        # nx.draw(G)
+
+        df1_geo = gpd.GeoDataFrame(df1, crs = 'epsg:2154', geometry = df1['Line_geometry'])
+        df1_geo.plot(column="FC")
+        plt.show()
+        plt.savefig(self.__graph.pathOutputJpg)
+
+        print (df1_geo)
 
     def test(self):
         pathIn=self.__graph.setPathInputTsSl

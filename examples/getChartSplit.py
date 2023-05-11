@@ -1,13 +1,17 @@
-from symupol.graph.graph import Graph
-from symupol.graph.computeGeoPandasDf import ComputeGeoPandasDf
+from symupol.analysis.abstractDF import AbstractDF
+from symupol.analysis.analysis import Analysis
+from symupol.analysis.sumPollutants import SumPollutants
 from symupol.control.logger import Logger
 from symupol.control.config import Config
 from symupol.control.controller import Controller
 from symupol.control.tools import Tools
+from symupol.graph.computeGeoPandasDf import ComputeGeoPandasDf
+from symupol.graph.graph import Graph
 
 test_delete_files=False
 runEditFzp=True
 pathconfig="/home/mt_licit/project/symupol/scenarios/lafayette/config.xml"
+# pathconfig="/home/mt_licit/project/symupol/scenarios/test_grid_01/config.xml"
 
 # init config
 config=Config(pathconfig)
@@ -34,23 +38,17 @@ logger.initStoreLog()
 logger.storeFile()
 controller.copyToTmp(True) # copy the setup to the .tmp folder
 
-pathLinks="/media/mt_licit/data/licit_lab_dropbox/Michele Tirico/project/symupol/outputs/lafayette/links.csv"
+# graph
+pathLinks="/media/mt_licit/data/licit_lab_dropbox/Michele Tirico/project/symupol/outputs/lafayette/lafayette_ts-20000_lms-0020_lg.csv"
+pathJpg="/media/mt_licit/data/licit_lab_dropbox/Michele Tirico/project/symupol/outputs/lafayette/lafayette_ts-20000_lms-0020_lg.jpg"
 # init graph
 graph=Graph(config=config,controller=controller)
 graph.setPathInputLinks(path=pathLinks)
+graph.setPathOutputJpg(pathJpg)
 graph.initDf()
+
 graph.initGraph()
 
-# casting files
 ggpdf=ComputeGeoPandasDf(graph=graph)
-ggpdf.computeGenericGraph()
-graph.getInfo()
+ggpdf.computeSingleGraph(ts=20000,lms=5)
 
-#ggpdf.test()
-
-
-# export
-graph.plotGeoDf(run=False)
-graph.saveGeoDfJpg(run=False)
-# graph.saveGeoDf(path="/media/mt_licit/data/licit_lab_dropbox/Michele Tirico/project/symupol/outputs/lafayette/test_cast.geojson")
-# ggpdf.test()

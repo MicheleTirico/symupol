@@ -140,10 +140,10 @@ class Links:
             mls=self.__getMultiLineString()
             # testPath="/media/mt_licit/data/licit_lab_dropbox/Michele Tirico/project/symupol/outputs/lafayette/test_split.csv"
             for maxLen in self.graph.config.paramAnalysisLengthMaxSplit:
-                with open (self.graph.config.folder_output+"link_splitted_mls_{:0>4}.csv".format(maxLen), "w") as f_write:
+                with open (self.graph.config.folder_output+"link_splitted_lms_{:0>4}.csv".format(maxLen), "w") as f_write:
                     self.graph.logger.log(cl=self,method=sys._getframe(),message="split links by max length of: "+maxLen)
 
-                    header="id;in;out;coord_in;coord_out;int_points;length;id_split\n"
+                    header="tron;in;out;coord_in;coord_out;int_points;length;id_split\n"
                     f_write.write(header)
                     for id,lineString in mls.items():
                         nSplit=lineString.length//float(maxLen)+1
@@ -152,12 +152,13 @@ class Links:
                             tools_shapely.removeShortLines(splitLine,0.001)
                             i=1
                             for splittedLine in splitLine:
-                                id_split=id+"_{:0>4}".format(i)
+                                id_split=id+"_split-"+str(float(i))            #id+"_{:0>4}".format(i)
                                 vals=[id,
                                       "-",
                                       "-",
                                       str(splittedLine.coords[0][0])+" "+str(splittedLine.coords[0][1]),
                                       str(splittedLine.coords[1][0])+" "+str(splittedLine.coords[1][1]),
+                                      "-",
                                       str(splittedLine.length),
                                       id_split
                                 ]
