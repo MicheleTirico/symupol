@@ -42,4 +42,4 @@ links.setOutputTrajectories(path="/media/mt_licit/data/licit_lab_dropbox/Michele
 # links.setOutputSplitLinks(path="/media/mt_licit/data/licit_lab_dropbox/Michele Tirico/project/symupol/outputs/lafayette/links_splitted.csv")
 links.createCsv(run=False)
 links.addLengthTotrajectories(run=False)
-links.splitLinks(run=True)
+links.splitLinks_ns(run=True)

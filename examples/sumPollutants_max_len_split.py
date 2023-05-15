@@ -40,7 +40,7 @@ controller.copyToTmp(True) # copy the setup to the .tmp folder
 a=Analysis(config=config,controller=controller)
 adv=AbstractDF(analysis=a)
 adv.setParams(addRelativePosition=True, addCountVehicles=True,addTimeSlots=True,addPosSegment=False)
-adv.getAbstractDF(storeAbstractDF=True,computeIfExist=True) # todo readIfExist
+adv.getAbstractDF(storeAbstractDF=False,computeIfExist=False) # todo readIfExist
 
 sp=SumPollutants(analysis=a)
 # sp.compute()

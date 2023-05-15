@@ -29,6 +29,7 @@ class Config:
         self.setup=                         self.pathScenario+self.__getValType("urls","url","setup","file")+".xml"
         self.folder_outputs=                self.pathAbs+self.__getValType("urls","url","folder_outputs","dir")+"/"
         self.folder_output=                 self.folder_outputs+self.__getValType("urls","url","scenario","dir")+"/"
+        self.scenario=                      self.__getValType("urls","url","scenario","dir")
 
         self.setupTmp=                      self.tmp+self.__getValType("urls","url","setup","file")+".xml"
         self.outputTmp=                     self.tmp+"/OUT1/"

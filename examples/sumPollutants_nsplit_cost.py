@@ -5,6 +5,8 @@ from symupol.control.logger import Logger
 from symupol.control.config import Config
 from symupol.control.controller import Controller
 from symupol.control.tools import Tools
+from symupol.graph.graph import Graph
+from symupol.graph.links import Links
 
 test_delete_files=False
 runEditFzp=True
@@ -36,11 +38,24 @@ logger.initStoreLog()
 logger.storeFile()
 controller.copyToTmp(True) # copy the setup to the .tmp folder
 
+# create Links
+graph=Graph(config=config,controller=controller)
+links=Links(graph=graph)
+links.setInputXml(path="/media/mt_licit/data/licit_lab_dropbox/Michele Tirico/project/symupol/scenarios/lafayette/CoursLafayette.xml")
+links.setOutputCsv(path="/media/mt_licit/data/licit_lab_dropbox/Michele Tirico/project/symupol/outputs/lafayette/links.csv")
+links.setInputTrajectories(path="/media/mt_licit/data/licit_lab_dropbox/Michele Tirico/project/symupol/outputs/lafayette/trajectoires.csv")
+links.setOutputTrajectories(path="/media/mt_licit/data/licit_lab_dropbox/Michele Tirico/project/symupol/outputs/lafayette/trajectoires2.csv")
+links.createCsv(run=True)
+links.addLengthTotrajectories(run=True)
+links.splitLinks_ns(run=True)
+
 # analysis
 a=Analysis(config=config,controller=controller)
 adv=AbstractDF(analysis=a)
-adv.getAbstractDF(storeAbstractDF=False,readIfExist=True) # todo readIfExist
+adv.setParams(addRelativePosition=True, addCountVehicles=True,addTimeSlots=True,addPosSegment=True)
+adv.getAbstractDF(storeAbstractDF=True,computeIfExist=True) # todo readIfExist
+
 sp=SumPollutants(analysis=a)
-sp.compute()
-# sp.computeMaxLen()
+sp.computeNsplitCost(run=True,compute_df_spi=True,compute_df=True)
 sp.addIdSplit(run=True)
+sp.addGeometryLinks_ns(run=True)

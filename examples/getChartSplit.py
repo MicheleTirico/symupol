@@ -1,6 +1,3 @@
-from symupol.analysis.abstractDF import AbstractDF
-from symupol.analysis.analysis import Analysis
-from symupol.analysis.sumPollutants import SumPollutants
 from symupol.control.logger import Logger
 from symupol.control.config import Config
 from symupol.control.controller import Controller
@@ -39,8 +36,15 @@ logger.storeFile()
 controller.copyToTmp(True) # copy the setup to the .tmp folder
 
 # graph
-pathLinks="/media/mt_licit/data/licit_lab_dropbox/Michele Tirico/project/symupol/outputs/lafayette/lafayette_ts-20000_lms-0020_lg.csv"
-pathJpg="/media/mt_licit/data/licit_lab_dropbox/Michele Tirico/project/symupol/outputs/lafayette/lafayette_ts-20000_lms-0020_lg.jpg"
+ts=40000
+ts_chart=0
+ns=20
+list_indicators=['FC', 'CO2_TP', 'NOx_TP', 'CO_TP', 'HC_TP', 'PM_TP', 'PN_TP','id_split']
+indicator_chart=list_indicators[0]
+nameFile="lafayette_ts-{:0>4}_ns-{:0>4}_gl".format(ts,ns)
+pathLinks="/media/mt_licit/data/licit_lab_dropbox/Michele Tirico/project/symupol/outputs/lafayette/"+nameFile+".csv"
+pathJpg="/media/mt_licit/data/licit_lab_dropbox/Michele Tirico/project/symupol/outputs/lafayette/"+nameFile+"_"+indicator_chart+".jpg"
+
 # init graph
 graph=Graph(config=config,controller=controller)
 graph.setPathInputLinks(path=pathLinks)
@@ -50,5 +54,5 @@ graph.initDf()
 graph.initGraph()
 
 ggpdf=ComputeGeoPandasDf(graph=graph)
-ggpdf.computeSingleGraph(ts=20000,lms=5)
+ggpdf.computeSingleGraph(ts=ts,ts_chart=ts_chart,indicator_chart=indicator_chart)
 
