@@ -30,7 +30,6 @@ class Graph():
     def setPathInputTsSl(self,path):    self.setPathInputTsSl=path
     def setPathInputLinks(self,path):   self.pathInputLinks=path
     def setPathOutputNx(self,path):       self.pathOutputNx=path
-    def setPathOutputJpg(self,path):    self.pathOutputJpg=path
     def initDf(self):
         try:
             assert self.pathInputLinks!=None

@@ -48,3 +48,12 @@ class Tools:
 
     def getNameAndExtentionFromPath(self,path):
         return os.path.splitext(path)
+
+
+    def getDistancePoints(self,line):
+
+        # coord_in=(float(coord_in[0]),float(coord_in[1]))
+        # coord_out=(float(coord_out[0]),float(coord_out[1]))
+        distX,distY=abs(line[0][0]-line[1][0]),abs(line[0][1]-line[1][1])
+        length=pow(pow(distX,2)+pow(distY,2),.5)
+        return length

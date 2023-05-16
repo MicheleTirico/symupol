@@ -38,21 +38,37 @@ controller.copyToTmp(True) # copy the setup to the .tmp folder
 # graph
 ts=40000
 ts_chart=0
-ns=20
+ns=10
 list_indicators=['FC', 'CO2_TP', 'NOx_TP', 'CO_TP', 'HC_TP', 'PM_TP', 'PN_TP','id_split']
 indicator_chart=list_indicators[0]
-nameFile="lafayette_ts-{:0>4}_ns-{:0>4}_gl".format(ts,ns)
-pathLinks="/media/mt_licit/data/licit_lab_dropbox/Michele Tirico/project/symupol/outputs/lafayette/"+nameFile+".csv"
-pathJpg="/media/mt_licit/data/licit_lab_dropbox/Michele Tirico/project/symupol/outputs/lafayette/"+nameFile+"_"+indicator_chart+".jpg"
 
 # init graph
 graph=Graph(config=config,controller=controller)
-graph.setPathInputLinks(path=pathLinks)
-graph.setPathOutputJpg(pathJpg)
-graph.initDf()
 
-graph.initGraph()
+
 
 ggpdf=ComputeGeoPandasDf(graph=graph)
-ggpdf.computeSingleGraph(ts=ts,ts_chart=ts_chart,indicator_chart=indicator_chart)
+
+
+nameFile="lafayette_ts-{:0>4}_ns-{:0>4}_gl".format(ts,ns)
+pathLinks="/media/mt_licit/data/licit_lab_dropbox/Michele Tirico/project/symupol/outputs/lafayette/"+nameFile+".csv"
+graph.setPathInputLinks(path=pathLinks)
+graph.initDf()
+graph.initGraph()
+pathJpg="/media/mt_licit/data/licit_lab_dropbox/Michele Tirico/project/symupol/outputs/lafayette/charts/"+nameFile+"_test.jpg"
+ggpdf.setPathOutputJpg(pathJpg)
+ggpdf.computeSingleGraph(ts=ts,ts_chart=1,indicator_chart=list_indicators[0],saveJpg=True)
+
+
+# for t in [900,1500,40000]:
+#     for n in [5,10,20]:
+#         for i in range(len(list_indicators)):
+#             nameFile="lafayette_ts-{:0>4}_ns-{:0>4}_gl".format(t,n)
+#             pathLinks="/media/mt_licit/data/licit_lab_dropbox/Michele Tirico/project/symupol/outputs/lafayette/"+nameFile+".csv"
+#             graph.setPathInputLinks(path=pathLinks)
+#             graph.initDf()
+#             graph.initGraph()
+#             pathJpg="/media/mt_licit/data/licit_lab_dropbox/Michele Tirico/project/symupol/outputs/lafayette/charts/"+nameFile+"_"+list_indicators[i]+".jpg"
+#             ggpdf.setPathOutputJpg(pathJpg)
+#             ggpdf.computeSingleGraph(ts=t,ts_chart=1,indicator_chart=list_indicators[i],saveJpg=True)
 

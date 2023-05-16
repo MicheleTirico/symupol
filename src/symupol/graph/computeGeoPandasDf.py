@@ -5,27 +5,38 @@ import geopandas as gpd
 import numpy as np
 import matplotlib.pyplot as plt
 
-import fiona
-fiona.supported_drivers
-
 class ComputeGeoPandasDf:
     def __init__(self,graph):
         self.__graph=graph
         self.__graph.logger.log(cl=self,method=sys._getframe(),message="initialize geopandas dataframe")
 
-    def computeGenericGraph(self):
-        self.__graph.logger.log(cl=self,method=sys._getframe(),message="start  geopandas dataframe")
+    def setPathOutputJpg(self,path):    self.pathOutputJpg=path
 
-        coord_in=self.__graph.df["coord_in"].str.split(" ").apply(pd.Series,1).astype("float64")
-        coord_out=self.__graph.df["coord_out"].str.split(" ").apply(pd.Series,1).astype("float64")
-        self.__graph.df["n_in"] = list(zip(coord_in[0], coord_in[1]))
-        self.__graph.df["n_out"] = list(zip(coord_out[0], coord_out[1]))
-        self.__graph.df['n_in_geometry'] = self.__graph.df["n_in"].apply(lambda x: Point((x[0], x[1])))
-        self.__graph.df['n_out_geometry'] = self.__graph.df["n_out"].apply(lambda x: Point((x[0], x[1])))
-        self.__graph.df['Line_geometry'] = self.__graph.df.apply(lambda x: LineString([x['n_in'], x['n_out']]), axis=1)        # nx.draw(G)
-        self.__graph.df_geo = gpd.GeoDataFrame(self.__graph.df, crs = 'epsg:2154', geometry = self.__graph.df['Line_geometry'])
+    def getGenericGraph(self,run,saveJpg,pathJpg):
+        if run:
+            self.__graph.logger.log(cl=self,method=sys._getframe(),message="start  geopandas dataframe")
+            coord_in=self.__graph.df["coord_in"].str.split(" ").apply(pd.Series,1).astype("float64")
+            coord_out=self.__graph.df["coord_out"].str.split(" ").apply(pd.Series,1).astype("float64")
+            # print (self.__graph.df["coord_int"])
+            # coord_int=self.__graph.df["coord_int"].str.split(",").apply(pd.Series,1).astype("float64")
 
-        self.__graph.logger.log(cl=self,method=sys._getframe(),message="finish geopandas dataframe")
+            self.__graph.df["n_in"] = list(zip(coord_in[0], coord_in[1]))
+            self.__graph.df["n_out"] = list(zip(coord_out[0], coord_out[1]))
+            # self.__graph.df["n_int"] = list(zip(coord_int[0], coord_int[1]))
+
+            self.__graph.df['n_in_geometry'] = self.__graph.df["n_in"].apply(lambda x: Point((x[0], x[1])))
+            self.__graph.df['n_out_geometry'] = self.__graph.df["n_out"].apply(lambda x: Point((x[0], x[1])))
+            # self.__graph.df['n_int_geometry'] = self.__graph.df["n_int"].apply(lambda x: Point((x[0], x[1])))
+
+            self.__graph.df['Line_geometry'] = self.__graph.df.apply(lambda x: LineString([x['n_in'], x['n_out']]), axis=1)        # nx.draw(G)
+            df1_geo = gpd.GeoDataFrame(self.__graph.df, crs = 'epsg:2154', geometry = self.__graph.df['Line_geometry'])
+
+            if saveJpg:
+                df1_geo.plot()
+                # plt.show()
+                plt.savefig(pathJpg)
+
+            self.__graph.logger.log(cl=self,method=sys._getframe(),message="finish geopandas dataframe")
 
 
     """
@@ -34,7 +45,7 @@ class ComputeGeoPandasDf:
     ts_chart: position of the time split to make chart
     indicator_chart: which indicator should create the chart
     """
-    def computeSingleGraph(self,ts,ts_chart,indicator_chart):
+    def computeSingleGraph(self,ts,ts_chart,indicator_chart,saveJpg):
         self.__graph.logger.log(cl=self,method=sys._getframe(),message="compute the graph for time slot: "+str(ts) )
 
         df1=self.__graph.df[self.__graph.df['ts-{:0>4}'.format(ts)] == ts_chart]
@@ -51,11 +62,10 @@ class ComputeGeoPandasDf:
         df1['Line_geometry'] = df1.apply(lambda x: LineString([x['n_in'], x['n_out']]), axis=1)                                                             # nx.draw(G)        # df1['Line_geometry'] = df1.apply(lambda x: LineString([x['n_in'], x['n_int'], x['n_out']]), axis=1)        # nx.draw(G)
 
         df1_geo = gpd.GeoDataFrame(df1, crs = 'epsg:2154', geometry = df1['Line_geometry'])
-        df1_geo.plot(column=indicator_chart)
+        df1_geo.plot()#(column=indicator_chart)
         # plt.show()
-        plt.savefig(self.__graph.pathOutputJpg)
-        print (df1.columns)
-
+        print (self.pathOutputJpg)
+        if saveJpg:        plt.savefig(self.pathOutputJpg)
         # df1.to_csv("/media/mt_licit/data/licit_lab_dropbox/Michele Tirico/project/symupol/outputs/lafayette/lafayette_test.csv",sep=";")
 
 

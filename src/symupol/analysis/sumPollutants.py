@@ -99,7 +99,7 @@ class SumPollutants():
             self.__analysis.logger.log(cl=self,method=sys._getframe(),message="finish sum pollutants")
 
 
-    def computeMaxLen(self,run):
+    def computeMaxLen_old_01(self,run):
         self.__analysis.logger.log(cl=self,method=sys._getframe(),message="start  sum pollutants with max length")
         if run:
             for ts in self.__analysis.config.paramAnalysisListTimeSlot:
@@ -124,6 +124,61 @@ class SumPollutants():
                     df2.to_csv(pathStore,sep=";")
 
         self.__analysis.logger.log(cl=self,method=sys._getframe(),message="finish sum pollutants with max length")
+
+    def computeMaxLen(self,run):
+        self.__analysis.logger.log(cl=self,method=sys._getframe(),message="start  sum pollutants with max length")
+        if run:
+            list_save=['t', 'tron','FC', 'CO2_TP', 'NOx_TP', 'CO_TP', 'HC_TP', 'PM_TP', 'PN_TP', 'dst_rel','nVec']+["ts-{:0>4}".format(_) for _ in self.__analysis.config.paramAnalysisListTimeSlot]
+            df_abstract=pd.read_csv(filepath_or_buffer=self.__analysis.config.pathAbstractDF,sep=";")[list_save]#[['t', 'tron','FC', 'CO2_TP', 'NOx_TP', 'CO_TP', 'HC_TP', 'PM_TP', 'PN_TP', 'dst_rel','nVec', 'ts-0900', 'ts-1500', 'ts-40000']]
+            for lenMaxSp in self.__analysis.config.paramAnalysisLengthMaxSplit:
+                df1=df_abstract.copy(deep=True)
+
+                # path to store the df after merging
+                df2=df_abstract.copy(deep=True)
+
+                # df of links splitted
+                pathCsvLinksSplited=self.__analysis.config.folder_output+self.__analysis.config.scenario+"_link_splitted_lms_{:0>4}.csv".format(lenMaxSp)
+                df_split=pd.read_csv(filepath_or_buffer=pathCsvLinksSplited,sep=";")
+
+                # df links
+                pathCsvLinks=self.__analysis.config.folder_output+self.__analysis.config.scenario+"_links.csv".format(lenMaxSp)
+                df_links=pd.read_csv(filepath_or_buffer=pathCsvLinks,sep=";")
+
+                # merge df
+                list_save=  ['t', 'tron', 'FC', 'CO2_TP', 'NOx_TP', 'CO_TP', 'HC_TP', 'PM_TP','PN_TP', 'dst_rel', 'nVec','length']+\
+                            ["ts-{:0>4}".format(_) for _ in self.__analysis.config.paramAnalysisListTimeSlot]+\
+                            ["n_split_{:0>4}".format(_) for _ in self.__analysis.config.paramAnalysisNumberOfSplit]+ \
+                            ["length_split_{:0>4}".format(_) for _ in self.__analysis.config.paramAnalysisNumberOfSplit]
+                df_m1=pd.merge(df2,df_links,left_on="tron",right_on="id",how="outer")[list_save]
+
+                # get position of vehicle in the split
+                df_m1['pos_{:0>4}'.format(lenMaxSp)]=df_m1['dst_rel']//(1/df_m1['n_split_{:0>4}'.format(lenMaxSp)])+1
+
+                # get sum by split
+                df_m1.groupby(["tron","pos_{:0>4}".format(lenMaxSp)],as_index="False").sum()
+
+                # get pos in time split
+                df_m1['ts_{:0>4}'.format(lenMaxSp)]=df_m1['dst_rel']//(1/df_m1['n_split_{:0>4}'.format(lenMaxSp)])+1
+                for ts in self.__analysis.config.paramAnalysisListTimeSlot:
+                    pathStore=self.__pathInitOutput+'_ts-'+'{:0>4}'.format(ts)+'_lms-'+'{:0>4}'.format(lenMaxSp)+'_test.csv'
+
+                    df_m1["pos_ts_{:0>4}".format(ts)]=df_m1["t"]//int(ts)+1
+                #   df_m1.to_csv(self.__analysis.config.folder_output+self.__analysis.config.scenario+"df_no_group.csv",sep=";")
+                    print (df_m1)
+                    print(df_m1.columns)
+                    # df_m1 = df_m1.groupby(['tron']).mean()
+
+                    df_m2=df_m1.groupby(by=["tron","pos_{:0>4}".format(lenMaxSp),"pos_ts_{:0>4}".format(ts)]).sum()
+                    display(df_m2)
+
+                    #store
+                    self.__analysis.logger.log(cl=self,method=sys._getframe(),message="start store")
+                    df_m2.to_csv(pathStore,sep=";")
+
+
+
+        self.__analysis.logger.log(cl=self,method=sys._getframe(),message="finish sum pollutants with max length")
+
 
     def addGeometryLinks_ns(self,run):
         if run:

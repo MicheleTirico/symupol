@@ -37,6 +37,7 @@ class Config:
 #        self.outputPhemMod=                 self.folder_output+"phem/"+"tmp_400.mod"       # TODO: set the name file
         self.pathOutputSymupy               =self.folder_output+self.__getValType("urls","url","scenario","dir")+"_output_sy.xml"
 
+        self.pathLinks=                     self.folder_output+self.scenario+"_links.csv"
         # trajectoires (class editFzp)
         self.pathOutputVehicles=            self.folder_output+"trajectoires.csv"
         self.pathFzp                        =self.folder_output+"trajectoiresFzp.fzp"

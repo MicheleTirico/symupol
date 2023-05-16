@@ -43,9 +43,8 @@ adv.setParams(addRelativePosition=True, addCountVehicles=True,addTimeSlots=True,
 adv.getAbstractDF(storeAbstractDF=False,computeIfExist=False) # todo readIfExist
 
 sp=SumPollutants(analysis=a)
-# sp.compute()
 sp.computeMaxLen(run=True)
-sp.cleanDf(run=True)
-sp.addGeometryLinks(run=True)
+# sp.cleanDf(run=True)
+# sp.addGeometryLinks_mls(run=True)
 # sp.addIdSplit(run=True)
 

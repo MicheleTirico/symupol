@@ -2,7 +2,9 @@ import sys
 import csv
 import xml.etree.ElementTree as ET
 import os
-from symupol.control import tools_shapely
+import numpy as np
+from symupol.control import tools_shapely,tools
+import pandas as pd
 from shapely.geometry import LineString, Point
 
 from symupol.control.tools_shapely import splitLineStringDistance
@@ -14,13 +16,13 @@ class Links:
        # self.graph.logger=self.graph.config.logger
         self.__links={}
 
-        self.__outputCsv="" #TODO
+        self.__path_links=   self.graph.config.pathLinks
         self.__outputTrajectories="" #TODO
         self.__inputXml="" #TODO
         self.__inputTrajectories="" #TODO
         self.__outputSplitLinks=""  #TODO
 
-    def setOutputCsv(self,path):            self.__outputCsv=path
+    def setOutputCsv(self,path):            self.__path_links=path
 
     def setOutputTrajectories(self,path):   self.__outputTrajectories=path
 
@@ -40,12 +42,12 @@ class Links:
             reseau=reseaux.find("RESEAU")
             troncons=reseau.find("TRONCONS")
 
-            #if os.path.exists(self.__outputCsv):            os.system("rm "+self.__outputCsv) # remove file if exist
+            #if os.path.exists(self.__path_links):            os.system("rm "+self.__path_links) # remove file if exist
             headerFr="id;id_eltamont;id_eltaval;extremite_amont;extremite_aval"
             headerList=headerFr.split(";")
             header="id;in;out;coord_in;coord_out;int_points;length\n"
 
-            with open(self.__outputCsv, "w") as f:
+            with open(self.__path_links, "w") as f:
                 f.write(header)
                 for tron in troncons.iter():
                     if len(tron.attrib.values())!=0 and tron.tag=="TRONCON":
@@ -116,7 +118,7 @@ class Links:
     def __getMultiLineString(self):
         self.graph.logger.log(cl=self,method=sys._getframe(),message="start  create multi LineString")
         multiLineString={}
-        with open (self.__outputCsv, "r") as f_read:
+        with open (self.__path_links, "r") as f_read:
             next(f_read).replace("\n","")
             for row in  csv.reader(f_read):
                 vals=row[0].split(";")
@@ -126,7 +128,11 @@ class Links:
                 point_in=Point(float(coord_in[0]),float(coord_in[1]))
                 point_out=Point(float(coord_out[0]),float(coord_out[1]))
 
+                # print("-----------------",vals[0],list_int_points )
+                # for i in list_int_points:print (Point(i) )
                 l=[point_in]+[Point(i) for i in list_int_points]+[point_out]
+                # print (l)
+                # for i in l:print (i )
 
                 line=LineString(l)
                 id=vals[0].split(" ")[0]
@@ -165,37 +171,102 @@ class Links:
                                 i+=1
 
         self.graph.logger.log(cl=self,method=sys._getframe(),message="start split finish")
+
     def splitLinks_lms(self,run):
         if run:
             self.graph.logger.log(cl=self,method=sys._getframe(),message="start split links")
             mls=self.__getMultiLineString()
             for maxLen in self.graph.config.paramAnalysisLengthMaxSplit:
-                with open (self.graph.config.folder_output+"link_splitted_lms_{:0>4}.csv".format(maxLen), "w") as f_write:
-                    self.graph.logger.log(cl=self,method=sys._getframe(),message="split links by max length of: "+maxLen)
+                pathOutput=self.graph.config.folder_output+self.graph.config.scenario+"_link_splitted_lms_{:0>4}.csv".format(maxLen)
+                with open (pathOutput, "w") as f_write:
+                    self.graph.logger.log(cl=self,method=sys._getframe(),message="split links by max length of: "+maxLen+" . Output: "+pathOutput)
 
-                    header="tron;in;out;coord_in;coord_out;int_points;length;id_split\n"
+                    header="tron;in;out;coord_in;coord_out;coord_int;length;id_split\n"
                     f_write.write(header)
                     for id,lineString in mls.items():
                         nSplit=lineString.length//float(maxLen)+1
+                        splitLine=tools_shapely.splitLineStringNsplit_test(lineString,nSplit+1)
+                        # linestring=[]                        for pos in range(len(splitLine.coords)-1): linestring.append([splitLine.coords[pos],splitLine.coords[pos+1]])
+                        linestring=[[splitLine.coords[pos],splitLine.coords[pos+1]] for pos in range(len(splitLine.coords)-1)]
+                        # for i in linestring:print (i)
+                        i=1
+                        for line in linestring:
+                            # print (line)
+                            id_split=id+"_split-"+str(float(i))            #id+"_{:0>4}".format(i)
+                            # distance=self.graph.config.tools.getDistancePoints(line)
+                            # print (distance,lineString.length/nSplit)
+                            vals=[id,
+                                 "-",
+                                 "-",
+                                 str(line[0][0])+" "+str(line[0][1]),
+                                 str(line[1][0])+" "+str(line[1][1]),
+                                 "-",
+                                 str(lineString.length/nSplit),
+                                 id_split
+                                 ]
+                            f_write.write(";".join(vals)+"\n")
+                            i+=1
+
+
+
+
+
+            self.graph.logger.log(cl=self,method=sys._getframe(),message="Finish split.")
+
+    def addNumberOfSplits_lms(self,run):
+        if run:
+            df1=pd.read_csv(filepath_or_buffer=self.__path_links,sep=";")
+            for lenMaxSp in self.graph.config.paramAnalysisLengthMaxSplit:
+                self.graph.logger.log(cl=self,method=sys._getframe(),message="add number of splits for max length: "+lenMaxSp)
+                # df1["n_split_{:0>4}".format(lenMaxSp)]=df1["length"]/lenMaxSp
+                df1["n_split_{:0>4}".format(lenMaxSp)]=df1["length"]/float(lenMaxSp)
+                df1["n_split_{:0>4}".format(lenMaxSp)]=df1["n_split_{:0>4}".format(lenMaxSp)].apply(np.ceil).astype(int)
+                df1["length_split_{:0>4}".format(lenMaxSp)]=df1["length"]/df1["n_split_{:0>4}".format(lenMaxSp)]
+            df1.to_csv(self.__path_links,sep=";")
+
+
+
+    def splitLinks_lms_old_01(self,run):
+        if run:
+            self.graph.logger.log(cl=self,method=sys._getframe(),message="start split links")
+            mls=self.__getMultiLineString()
+            for maxLen in self.graph.config.paramAnalysisLengthMaxSplit:
+                pathOutput=self.graph.config.folder_output+self.graph.config.scenario+"_link_splitted_lms_{:0>4}.csv".format(maxLen)
+                with open (pathOutput, "w") as f_write:
+                    self.graph.logger.log(cl=self,method=sys._getframe(),message="split links by max length of: "+maxLen+" . Output: "+pathOutput)
+
+                    header="tron;in;out;coord_in;coord_out;coord_int;length;id_split\n"
+                    f_write.write(header)
+                    for id,lineString in mls.items():
+                        nSplit=lineString.length//float(maxLen)+1
+                        splitLine=tools_shapely.splitLineStringNsplit_test(lineString,nSplit)
+                        print (splitLine)
                         splitLine=tools_shapely.splitLineStringNsplit(lineString,nSplit,list())
+                        # print (splitLine)
                         if splitLine!=None:
-                            tools_shapely.removeShortLines(splitLine,0.001)
+                            tools_shapely.removeShortLines(splitLine,0.000001)
+                            # print (splitLine)
                             i=1
                             for splittedLine in splitLine:
+                                # print (type(splittedLine),len(splittedLine.coords))
+                                int_points=[str(splittedLine.coords[i][0])+" "+str(splittedLine.coords[i][1]) for i in range(1,len(splittedLine.coords)-1)]
+
+                                # if len(int_points)!=0:print(str(splittedLine.coords[0][0])+" "+str(splittedLine.coords[0][1]),int_points,(splittedLine.coords[1][0])+" "+str(splittedLine.coords[1][1]),)
+                                str_int_points=",".join(int_points)
                                 id_split=id+"_split-"+str(float(i))            #id+"_{:0>4}".format(i)
                                 vals=[id,
                                       "-",
                                       "-",
                                       str(splittedLine.coords[0][0])+" "+str(splittedLine.coords[0][1]),
                                       str(splittedLine.coords[1][0])+" "+str(splittedLine.coords[1][1]),
-                                      "-",
+                                      str_int_points,
                                       str(splittedLine.length),
                                       id_split
                                 ]
                                 f_write.write(";".join(vals)+"\n")
                                 i+=1
 
-        self.graph.logger.log(cl=self,method=sys._getframe(),message="start split finish")
+            self.graph.logger.log(cl=self,method=sys._getframe(),message="Finish split.")
 
     def __getLineString(self,vals):
         l=[]
