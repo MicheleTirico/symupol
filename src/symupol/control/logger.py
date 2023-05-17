@@ -67,7 +67,7 @@ class Logger:
             print (mess)
 
             if doQuit: quit()
-            if doReturn: return True
+            if doReturn: return 0
 
     def __completeMessage (self,state,cl,method,message):
         time=str(datetime.datetime.now())

@@ -32,7 +32,7 @@ class SumPollutants():
         self.__analysis.controller.removeIfExist(path=pathTimeStep)
         self.__dfPerTimeStep.to_csv(pathTimeStep, header=True)
 
-#        print ("--------------------------- df per instant -----------------------------------\n",self.__dfPerTimeStep)
+        #        print ("--------------------------- df per instant -----------------------------------\n",self.__dfPerTimeStep)
 
         for ts in self.__analysis.config.paramAnalysisListTimeSlot:
             for split in self.__analysis.config.paramAnalysisNumberOfSplit:
@@ -80,6 +80,7 @@ class SumPollutants():
                         self.__analysis.logger.log(cl=self,method=sys._getframe(),message="start  sum pollutants for time slot: "+ts+" and link splitted in: "+split)
 
                         # create df
+
                         vals=["tron","ts-"+"{:0>4}".format(ts),"ns-"+"{:0>4}".format(split)]
                         df1=df_abstract.groupby(vals).sum()
                         df1=df1[["FC","CO2_TP","NOx_TP","CO_TP","HC_TP","PM_TP","PN_TP"]]
@@ -131,12 +132,14 @@ class SumPollutants():
             list_save=['t', 'tron','FC', 'CO2_TP', 'NOx_TP', 'CO_TP', 'HC_TP', 'PM_TP', 'PN_TP', 'dst_rel','nVec']+["ts-{:0>4}".format(_) for _ in self.__analysis.config.paramAnalysisListTimeSlot]
             df_abstract=pd.read_csv(filepath_or_buffer=self.__analysis.config.pathAbstractDF,sep=";")[list_save]#[['t', 'tron','FC', 'CO2_TP', 'NOx_TP', 'CO_TP', 'HC_TP', 'PM_TP', 'PN_TP', 'dst_rel','nVec', 'ts-0900', 'ts-1500', 'ts-40000']]
             for lenMaxSp in self.__analysis.config.paramAnalysisLengthMaxSplit:
+                self.__analysis.logger.log(cl=self,method=sys._getframe(),message="start  sum pollutants with max length of: "+lenMaxSp)
+
                 df1=df_abstract.copy(deep=True)
 
                 # path to store the df after merging
                 df2=df_abstract.copy(deep=True)
 
-                # df of links splitted
+                # df of links split
                 pathCsvLinksSplited=self.__analysis.config.folder_output+self.__analysis.config.scenario+"_link_splitted_lms_{:0>4}.csv".format(lenMaxSp)
                 df_split=pd.read_csv(filepath_or_buffer=pathCsvLinksSplited,sep=";")
 
@@ -145,11 +148,12 @@ class SumPollutants():
                 df_links=pd.read_csv(filepath_or_buffer=pathCsvLinks,sep=";")
 
                 # merge df
-                list_save=  ['t', 'tron', 'FC', 'CO2_TP', 'NOx_TP', 'CO_TP', 'HC_TP', 'PM_TP','PN_TP', 'dst_rel', 'nVec','length']+\
-                            ["ts-{:0>4}".format(_) for _ in self.__analysis.config.paramAnalysisListTimeSlot]+\
+                list_save=  ['t', 'tron', 'FC', 'CO2_TP', 'NOx_TP', 'CO_TP', 'HC_TP', 'PM_TP','PN_TP', 'dst_rel', 'nVec','length']+ \
+                            ["ts-{:0>4}".format(_) for _ in self.__analysis.config.paramAnalysisListTimeSlot]+ \
                             ["n_split_{:0>4}".format(_) for _ in self.__analysis.config.paramAnalysisNumberOfSplit]+ \
                             ["length_split_{:0>4}".format(_) for _ in self.__analysis.config.paramAnalysisNumberOfSplit]
-                df_m1=pd.merge(df2,df_links,left_on="tron",right_on="id",how="outer")[list_save]
+
+                df_m1=pd.merge(df2,df_links,left_on="tron",right_on="id",how="outer")#[list_save]
 
                 # get position of vehicle in the split
                 df_m1['pos_{:0>4}'.format(lenMaxSp)]=df_m1['dst_rel']//(1/df_m1['n_split_{:0>4}'.format(lenMaxSp)])+1
@@ -160,22 +164,25 @@ class SumPollutants():
                 # get pos in time split
                 df_m1['ts_{:0>4}'.format(lenMaxSp)]=df_m1['dst_rel']//(1/df_m1['n_split_{:0>4}'.format(lenMaxSp)])+1
                 for ts in self.__analysis.config.paramAnalysisListTimeSlot:
-                    pathStore=self.__pathInitOutput+'_ts-'+'{:0>4}'.format(ts)+'_lms-'+'{:0>4}'.format(lenMaxSp)+'_test.csv'
+                    self.__analysis.logger.log(cl=self,method=sys._getframe(),message="start  sum pollutants with max length of: "+lenMaxSp+ " and time split of: "+ts)
+
+                    pathStore=self.__pathInitOutput+'_ts-'+'{:0>4}'.format(ts)+'_lms-'+'{:0>4}'.format(lenMaxSp)+'.csv'
 
                     df_m1["pos_ts_{:0>4}".format(ts)]=df_m1["t"]//int(ts)+1
-                #   df_m1.to_csv(self.__analysis.config.folder_output+self.__analysis.config.scenario+"df_no_group.csv",sep=";")
-                    print (df_m1)
-                    print(df_m1.columns)
-                    # df_m1 = df_m1.groupby(['tron']).mean()
-
                     df_m2=df_m1.groupby(by=["tron","pos_{:0>4}".format(lenMaxSp),"pos_ts_{:0>4}".format(ts)]).sum()
-                    display(df_m2)
+
+                    # remove multiindex
+                    df_m2=df_m2.reset_index(level=[0,1])
+
+                    # add columns id_split
+                    df_m2["id_split_{:0>4}".format(lenMaxSp)]=df_m2["tron"]+"_split-"+df_m2["pos_{:0>4}".format(lenMaxSp)].astype(str)
+
+                    list_save=["tron","t","FC","CO2_TP","NOx_TP","CO_TP","HC_TP","PM_TP","PN_TP","dst_rel","nVec",'pos_{:0>4}'.format(lenMaxSp),'n_split_{:0>4}'.format(lenMaxSp),"id_split_{:0>4}".format(lenMaxSp)]
+                    df_m2=df_m2[list_save]
 
                     #store
-                    self.__analysis.logger.log(cl=self,method=sys._getframe(),message="start store")
+                    self.__analysis.logger.log(cl=self,method=sys._getframe(),message="start store: "+pathStore)
                     df_m2.to_csv(pathStore,sep=";")
-
-
 
         self.__analysis.logger.log(cl=self,method=sys._getframe(),message="finish sum pollutants with max length")
 
@@ -199,27 +206,46 @@ class SumPollutants():
             for ts in self.__analysis.config.paramAnalysisListTimeSlot:
                 for lenMaxSp in self.__analysis.config.paramAnalysisLengthMaxSplit:
                     self.__analysis.logger.log(cl=self,method=sys._getframe(),message="add geometry of links for time slot: "+ts+" and max length of split of: "+lenMaxSp)
+
+                    # get df sum pollutants
                     path_sum=self.__pathInitOutput+"_ts-"+"{:0>4}".format(ts)+"_lms-"+"{:0>4}".format(lenMaxSp)+".csv"
                     df1=pd.read_csv(filepath_or_buffer=path_sum,sep=";")
-                    path_split=self.__analysis.config.folder_output+"link_splitted_lms_{:0>4}.csv".format(lenMaxSp)
+
+                    # get df split links
+                    path_split=self.__analysis.config.folder_output+self.__analysis.config.scenario+"_link_splitted_lms_{:0>4}.csv".format(lenMaxSp)
                     df2=pd.read_csv(filepath_or_buffer=path_split,sep=";")
-                    df3=pd.merge(df1,df2,on="id_split",how="outer")
+
+                    # merge df
+                    df3=pd.merge(df1,df2,left_on="id_split_{:0>4}".format(lenMaxSp),right_on="id_split",how="outer")
                     pathStore=self.__pathInitOutput+"_ts-"+"{:0>4}".format(ts)+"_lms-"+"{:0>4}_gl".format(lenMaxSp)+".csv"
-                    print (pathStore)
+                    self.__analysis.logger.log(cl=self,method=sys._getframe(),message="Path store: "+pathStore)
+
                     df3.to_csv(pathStore,sep=";")
     def cleanDf(self,run):
         if run:
             for ts in self.__analysis.config.paramAnalysisListTimeSlot:
                 for lenMaxSp in self.__analysis.config.paramAnalysisLengthMaxSplit:
-                    path=self.__pathInitOutput+"_ts-"+"{:0>4}".format(ts)+"_lms-"+"{:0>4}".format(lenMaxSp)+".csv"
-                    self.__analysis.logger.log(cl=self,method=sys._getframe(),message="clean df: "+self.__analysis.config.tools.getNameAndExtentionFromPath(path)[0])
+                    path=self.__pathInitOutput+'_ts-'+'{:0>4}'.format(ts)+'_lms-'+'{:0>4}'.format(lenMaxSp)+'.csv'
+                    self.__analysis.logger.log(cl=self,method=sys._getframe(),message="clean df: "+path)
+                    list_save=["tron","t","FC","CO2_TP","NOx_TP","CO_TP","HC_TP","PM_TP","PN_TP","dst_rel","nVec",'pos_{:0>4}'.format(lenMaxSp),'n_split_{:0>4}'.format(lenMaxSp)]
                     df1=pd.read_csv(path,sep=";")
-                    df1=df1[["id_split","ts-"+str(int(ts)),"tron","FC","CO2_TP","NOx_TP","CO_TP","HC_TP","PM_TP","PN_TP"]]
+                    df1=df1[list_save]
                     df1.to_csv(path,sep=";")
 
-    def addIdSplit(self,run):
+    def addIdSplit_mls(self,run):
         if run:
-            self.__analysis.logger.log(cl=self,method=sys._getframe(),message="start  add split link id")
+            for ts in self.__analysis.config.paramAnalysisListTimeSlot:
+                for lenMaxSp in self.__analysis.config.paramAnalysisLengthMaxSplit:
+                    path=self.__pathInitOutput+'_ts-'+'{:0>4}'.format(ts)+'_lms-'+'{:0>4}'.format(lenMaxSp)+'.csv'
+                    self.__analysis.logger.log(cl=self,method=sys._getframe(),message="clean df: "+path)
+                    df1=pd.read_csv(path,sep=";")
+                    df1["id_split_{:0>4}".format(lenMaxSp)]=df1["tron"]+"_split-"+df1['pos_{:0>4}'.format(lenMaxSp)].astype(str)
+                    self.__analysis.logger.log(cl=self,method=sys._getframe(),message="Path store: "+path)
+                    df1.to_csv(path,sep=";")
+
+    def addIdSplit_ns(self,run):
+        if run:
+            self.__analysis.logger.log(cl=self, method=sys._getframe(), message="start  add split link id")
             for path in self.__pathsOfOutputs_nSplit:
                 self.__analysis.logger.log(cl=self,method=sys._getframe(),message="add split link id for table: "+os.path.splitext(path)[0]+os.path.splitext(path)[1])
                 listOfSplits=["{:0>4}".format(i) for i in self.__analysis.config.paramAnalysisNumberOfSplit]            # get the right file

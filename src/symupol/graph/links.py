@@ -122,7 +122,7 @@ class Links:
             next(f_read).replace("\n","")
             for row in  csv.reader(f_read):
                 vals=row[0].split(";")
-                coord_in,coord_out,coord_int_points=vals[3].split(" "), vals[4].split(" "), vals[5].split(" ")
+                coord_in,coord_out,coord_int_points=vals[4].split(" "), vals[5].split(" "), vals[6].split(" ")
                 coord_int_points.remove('') if '' in coord_int_points else None
                 list_int_points=[(float(coord_int_points[i]),float(coord_int_points[i + 1])) for i in range (0,len(coord_int_points)-1,2)]
                 point_in=Point(float(coord_in[0]),float(coord_in[1]))
@@ -135,12 +135,12 @@ class Links:
                 # for i in l:print (i )
 
                 line=LineString(l)
-                id=vals[0].split(" ")[0]
+                id=vals[1].split(" ")[0]
                 multiLineString[id]=line
         self.graph.logger.log(cl=self,method=sys._getframe(),message="finish create multi LineString")
         return multiLineString
 
-    def splitLinks_ns(self,run):
+    def splitLinks_ns_old_01(self,run):
         if run:
             self.graph.logger.log(cl=self,method=sys._getframe(),message="start split links")
             mls=self.__getMultiLineString()
@@ -171,6 +171,39 @@ class Links:
                                 i+=1
 
         self.graph.logger.log(cl=self,method=sys._getframe(),message="start split finish")
+
+    def splitLinks_ns(self,run):
+        if run:
+            self.graph.logger.log(cl=self,method=sys._getframe(),message="start split links")
+            mls=self.__getMultiLineString()
+            for nSplit in self.graph.config.paramAnalysisNumberOfSplit:
+                nSplit=int(nSplit)
+
+                pathOutput=self.graph.config.folder_output+self.graph.config.scenario+"_link_splitted_ns_{:0>4}.csv".format(nSplit)
+                with open (pathOutput, "w") as f_write:
+                    self.graph.logger.log(cl=self,method=sys._getframe(),message="split links by number of splits constant of: "+str(nSplit)+".")
+
+                    header="tron;in;out;coord_in;coord_out;coord_int;length;id_split\n"
+                    f_write.write(header)
+                    for id,lineString in mls.items():
+                        splitLine=tools_shapely.splitLineStringNsplit_test(lineString,nSplit+1)
+                        linestring=[[splitLine.coords[pos],splitLine.coords[pos+1]] for pos in range(len(splitLine.coords)-1)]
+                        i=1
+                        for line in linestring:
+                            id_split=id+"_split-"+str(float(i))            #id+"_{:0>4}".format(i)
+                            vals=[id,
+                                  "-",
+                                  "-",
+                                  str(line[0][0])+" "+str(line[0][1]),
+                                  str(line[1][0])+" "+str(line[1][1]),
+                                  "-",
+                                  str(lineString.length/nSplit),
+                                  id_split
+                                  ]
+                            f_write.write(";".join(vals)+"\n")
+                            i+=1
+
+            self.graph.logger.log(cl=self,method=sys._getframe(),message="Finish split. Output: "+pathOutput)
 
     def splitLinks_lms(self,run):
         if run:
@@ -206,10 +239,6 @@ class Links:
                                  ]
                             f_write.write(";".join(vals)+"\n")
                             i+=1
-
-
-
-
 
             self.graph.logger.log(cl=self,method=sys._getframe(),message="Finish split.")
 

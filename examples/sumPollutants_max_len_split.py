@@ -44,7 +44,7 @@ adv.getAbstractDF(storeAbstractDF=False,computeIfExist=False) # todo readIfExist
 
 sp=SumPollutants(analysis=a)
 sp.computeMaxLen(run=True)
-# sp.cleanDf(run=True)
-# sp.addGeometryLinks_mls(run=True)
-# sp.addIdSplit(run=True)
+sp.cleanDf(run=True)
+sp.addIdSplit_mls(run=True)
+sp.addGeometryLinks_mls(run=True)
 

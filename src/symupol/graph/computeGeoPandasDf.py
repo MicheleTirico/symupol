@@ -38,14 +38,42 @@ class ComputeGeoPandasDf:
 
             self.__graph.logger.log(cl=self,method=sys._getframe(),message="finish geopandas dataframe")
 
+    def getChart_lms(self,ts,ts_chart,lms,indicator,saveJpg):
+        self.__graph.logger.log(cl=self,method=sys._getframe(),message="get chart for the indicator: "+indicator+", ts:" +str(ts)+" and lms: "+str(lms) )
+        pathSumPollutants=self.__graph.config.folder_output+self.__graph.config.scenario+'_ts-'+'{:0>4}'.format(ts)+'_lms-'+'{:0>4}'.format(lms)+'_gl.csv'
 
-    """
-    ts: time split for the analysis
-    lms: max length of links for the analysis
-    ts_chart: position of the time split to make chart
-    indicator_chart: which indicator should create the chart
-    """
+        df1=pd.read_csv(pathSumPollutants,sep=";")
+        try:
+            print (ts_chart)
+            df1=df1[df1['pos_ts_{:0>4}'.format(ts)] ==ts_chart] # "'pos_ts_{:0>4}'.format(ts)
+        except KeyError:
+            return self.__graph.logger.warning(cl=self,method=sys._getframe(),message="get chart for the indicator: "+indicator+", ts:" +str(ts)+" and lms: "+str(lms), doQuit=False,doReturn=True)
+
+        coord_in=df1["coord_in"].str.split(" ").apply(pd.Series,1).astype("float64")
+        coord_out=df1["coord_out"].str.split(" ").apply(pd.Series,1).astype("float64")                                                                      # coord_int=df1["int_points"].str.split(" ").apply(pd.Series,1).astype("float64")
+
+        df1["n_in"] = list(zip(coord_in[0], coord_in[1]))
+        df1["n_out"] = list(zip(coord_out[0], coord_out[1]))                                                                                                # df1["n_int"] = list(zip(coord_int[0], coord_int[1]))
+
+        df1['n_in_geometry'] = df1["n_in"].apply(lambda x: Point((x[0], x[1])))
+        df1['n_out_geometry'] = df1["n_out"].apply(lambda x: Point((x[0], x[1])))                                                                           # df1['n_inter_geometry']=df1["int_points"].apply(lambda x: Point((x[0], x[1])))
+        df1['Line_geometry'] = df1.apply(lambda x: LineString([x['n_in'], x['n_out']]), axis=1)                                                             # nx.draw(G)        # df1['Line_geometry'] = df1.apply(lambda x: LineString([x['n_in'], x['n_int'], x['n_out']]), axis=1)        # nx.draw(G)
+
+        df1_geo = gpd.GeoDataFrame(df1, crs = 'epsg:2154', geometry = df1['Line_geometry'])
+        df1_geo.plot(column=indicator)
+        # plt.show()
+        print (self.pathOutputJpg)
+        if saveJpg:        plt.savefig(self.pathOutputJpg)
+
+
     def computeSingleGraph(self,ts,ts_chart,indicator_chart,saveJpg):
+
+        """
+        ts: time split for the analysis
+        lms: max length of links for the analysis
+        ts_chart: position of the time split to make chart
+        indicator_chart: which indicator should create the chart
+        """
         self.__graph.logger.log(cl=self,method=sys._getframe(),message="compute the graph for time slot: "+str(ts) )
 
         df1=self.__graph.df[self.__graph.df['ts-{:0>4}'.format(ts)] == ts_chart]

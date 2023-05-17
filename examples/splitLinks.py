@@ -44,5 +44,5 @@ links.setOutputTrajectories(path="/media/mt_licit/data/licit_lab_dropbox/Michele
 links.createCsv(run=True)
 links.addNumberOfSplits_lms(run=True)
 links.addLengthTotrajectories(run=False)
-# links.splitLinks_ns(run=True)
+links.splitLinks_ns(run=True)
 links.splitLinks_lms(run=False)

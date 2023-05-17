@@ -8,17 +8,14 @@ class Analysis():
                  controller:Controller):
         self.config=config
         self.controller=controller
-        self.logger=self.config.logger
-        self.logger.log(cl=self,method=sys._getframe(),message="initialize Analysis")
+        # self.logger=self.config.logger
+
+        self.config.logger.log(cl=self,method=sys._getframe(),message="initialize Analysis")
 
         # self.abstractDF=""
 
         self.pathTableMerged=    self.config.pathOutputMerged
         self.pathAbstractDF=     self.config.pathAbstractDF
-
-
-
-
 
 def test (self,val):
         print (val)
