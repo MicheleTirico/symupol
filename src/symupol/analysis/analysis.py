@@ -8,7 +8,7 @@ class Analysis():
                  controller:Controller):
         self.config=config
         self.controller=controller
-        # self.logger=self.config.logger
+        self.logger=self.config.logger
 
         self.config.logger.log(cl=self,method=sys._getframe(),message="initialize Analysis")
 

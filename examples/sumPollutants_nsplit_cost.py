@@ -47,7 +47,7 @@ links.setInputTrajectories(path="/media/mt_licit/data/licit_lab_dropbox/Michele 
 links.setOutputTrajectories(path="/media/mt_licit/data/licit_lab_dropbox/Michele Tirico/project/symupol/outputs/lafayette/trajectoires2.csv")
 # links.createCsv(run=True)
 # links.addLengthTotrajectories(run=True)
-links.splitLinks_ns(run=True)
+links.splitLinks_ns(run=True,listSplit=None)
 
 # analysis
 a=Analysis(config=config,controller=controller)
@@ -56,6 +56,6 @@ adv.setParams(addRelativePosition=True, addCountVehicles=True,addTimeSlots=True,
 adv.getAbstractDF(storeAbstractDF=True,computeIfExist=True) # todo readIfExist
 
 sp=SumPollutants(analysis=a)
-sp.computeNsplitCost(run=True,compute_df_spi=True,compute_df=True)
+sp.computeNsplitCost(run=True,compute_df_spi=True,compute_df=True,listSplit=None)
 # sp.addIdSplit_ns(run=True)
 # sp.addGeometryLinks_ns(run=True)

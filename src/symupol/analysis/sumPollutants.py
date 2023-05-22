@@ -1,12 +1,13 @@
 import os
 import sys
 import pandas as pd
+import numpy as np
 
 class SumPollutants():
     def __init__(self,analysis):
         self.__analysis=analysis
 
-        self.__analysis.logger.log(cl=self,method=sys._getframe(),message="initialize sum pollutants")
+        self.__analysis.config.logger.log(cl=self,method=sys._getframe(),message="initialize sum pollutants")
         self.__pathInitOutput=self.__analysis.config.folder_output+self.__analysis.config.getNameScenario()
         self.__pathsOfOutputs_nSplit=[]
         self.__pathsOfOutputs_maxLenSplit=[]
@@ -49,9 +50,54 @@ class SumPollutants():
                 df1.to_csv(path,sep=";")
                 self.__pathsOfOutputs_nSplit.append(path)
                 self.__analysis.logger.log(cl=self,method=sys._getframe(),message="finish to store file: "+path)
-                self.__analysis.logger.log(cl=self,method=sys._getframe(),message="finish sum pollutants for time slot: "+ts+" and link splitted in: "+split)
+                self.__analysis.logger.log(cl=self,method=sys._getframe(),message="finish sum pollutants for time slot: "+ts+" and link splitted in: "+str(split))
 
         self.__analysis.logger.log(cl=self,method=sys._getframe(),message="finish sum pollutants")
+
+
+    def computeSumPerSplitCost(self,run):
+        if run:
+            self.__analysis.logger.log(cl=self,method=sys._getframe(),message="start  compute sum split cost")
+
+            # if listTs==None: listTs=self.__analysis.config.paramAnalysisListTimeSlot
+            # if listSplit==None: listSplit=self.__analysis.config.paramAnalysisNumberOfSplit
+
+            for split in self.__analysis.config.paramAnalysisNumberOfSplit:
+                for ts in self.__analysis.config.paramAnalysisListTimeSlot:
+
+                    self.__analysis.logger.log(cl=self,method=sys._getframe(),message="start  compute sum split cost for ns: "+str(split))
+                    df_abstract=pd.read_csv(filepath_or_buffer=self.__analysis.config.pathAbstractDF,sep=";")
+
+                    split=int(split)
+                    df_abstract["ns-{:0>4}".format(split)]=df_abstract["dst_rel"]//(1/split)+1
+                    df_abstract.loc[df_abstract["ns-{:0>4}".format(split)] == "inf","ns-{:0>4}".format(split)] = 0
+
+                    df_abstract.loc[df_abstract["ns-{:0>4}".format(split)] < 0 , "ns-{:0>4}".format(split)] = 0
+                    df_abstract.loc[df_abstract["ns-{:0>4}".format(split)] == np.inf , "ns-{:0>4}".format(split)] = 0                # df_abstract["ns-{:0>4}".format(split)].astype(int)
+                    df_abstract["id_link_ns-{:0>4}".format(split)]=df_abstract["tron"]+"_"+df_abstract["ns-{:0>4}".format(split)].astype(str)
+
+                    # groupby sum dataframe
+                    df_abstract=df_abstract.groupby(["id_link_ns-{:0>4}".format(split),"ns-{:0>4}".format(split),"ts-{:0>4}".format(ts)]).sum()
+
+                    # remove multiindex
+                    df_abstract=df_abstract.reset_index(level=[0,1,2])
+                    print (df_abstract)
+                    list_save=  ['FC', 'CO2_TP', 'NOx_TP', 'CO_TP', 'HC_TP', 'PM_TP','PN_TP', 'nVec']+ \
+                                ["ts-{:0>4}".format(_) for _ in self.__analysis.config.paramAnalysisListTimeSlot]+ \
+                                ["ns-{:0>4}".format(split)]+ \
+                                ["ts-{:0>4}".format(ts)]+ \
+                                ["id_link_ns-{:0>4}".format(split)]
+
+                    df_abstract=df_abstract[list_save]
+                    print (df_abstract)
+
+                    # store
+                    path_store=self.__analysis.config.folder_output+self.__analysis.config.scenario+"_sumPerSplit_ns-{:0>4}".format(split)+"_"+"ts-{:0>4}".format(ts)+".csv"
+                    self.__analysis.logger.log(cl=self,method=sys._getframe(),message="start  to store file: "+path_store)
+                    df_abstract.to_csv(path_store,sep=";")
+                    self.__analysis.logger.log(cl=self,method=sys._getframe(),message="finish to store file: "+path_store)
+
+            self.__analysis.logger.log(cl=self,method=sys._getframe(),message="finish compute sum split cost")
 
 
     def computeNsplitCost(self,run,compute_df_spi, compute_df):
@@ -61,7 +107,7 @@ class SumPollutants():
             self.__analysis.logger.log(cl=self,method=sys._getframe(),message="start  compute sum per instant of pollutants ")
             if compute_df_spi==True:
                 df_abstract=pd.read_csv(filepath_or_buffer=self.__analysis.config.pathAbstractDF,sep=";")
-                pathTimeStep=self.__pathInitOutput+"_sumPerInstant.csv"
+                pathTimeStep=self.__analysis.config.folder_output+self.__analysis.config.scenario+"_sumPerInstant.csv"
                 self.__analysis.logger.log(cl=self,method=sys._getframe(),message="df_sumPerInstant does not exist. Compute now")
                 df_sumPerInstant=df_abstract.groupby(["tron","t"],as_index="False").sum() # aggiungi posizione del segmento e hai anche lo spit.
                 self.__analysis.logger.log(cl=self,method=sys._getframe(),message="finish compute sum per instant of pollutants ")
@@ -70,6 +116,7 @@ class SumPollutants():
                 self.__analysis.logger.log(cl=self,method=sys._getframe(),message="start store df_sumPerInstant")
             else:
                 self.__analysis.logger.log(cl=self,method=sys._getframe(),message="df_sumPerInstant exists. Go through")
+            # if listSplit==None: listSplit=self.__analysis.config.paramAnalysisNumberOfSplit
 
             for ts in self.__analysis.config.paramAnalysisListTimeSlot:
                 for split in self.__analysis.config.paramAnalysisNumberOfSplit:
@@ -77,25 +124,24 @@ class SumPollutants():
 
                     self.__list_files.append(path)
                     if compute_df==True:
-                        self.__analysis.logger.log(cl=self,method=sys._getframe(),message="start  sum pollutants for time slot: "+ts+" and link splitted in: "+split)
+                        self.__analysis.logger.log(cl=self,method=sys._getframe(),message="start  sum pollutants for time slot: "+ts+" and link splitted in: "+str(split))
 
                         # create df
-
                         vals=["tron","ts-"+"{:0>4}".format(ts),"ns-"+"{:0>4}".format(split)]
                         df1=df_abstract.groupby(vals).sum()
                         df1=df1[["FC","CO2_TP","NOx_TP","CO_TP","HC_TP","PM_TP","PN_TP"]]
-                        self.__analysis.logger.log(cl=self,method=sys._getframe(),message="finish to create dataframe for time slot: "+ts+" and link splitted in: "+split)
+                        self.__analysis.logger.log(cl=self,method=sys._getframe(),message="finish to create dataframe for time slot: "+ts+" and link splitted in: "+str(split))
 
                         # store file
                         self.__analysis.controller.removeIfExist(path)
                         df1.to_csv(path,sep=";")
                         self.__pathsOfOutputs_nSplit.append(path)
                         self.__analysis.logger.log(cl=self,method=sys._getframe(),message="finish to store file: "+path)
-                        self.__analysis.logger.log(cl=self,method=sys._getframe(),message="finish sum pollutants for time slot: "+ts+" and link splitted in: "+split)
+                        self.__analysis.logger.log(cl=self,method=sys._getframe(),message="finish sum pollutants for time slot: "+ts+" and link splitted in: "+str(split))
 
                         self.__pathsOfOutputs_nSplit.append(path)
                     else:
-                        self.__analysis.logger.log(cl=self,method=sys._getframe(),message="not computed sum pollutants for time slot: "+ts+" and link splitted in: "+split)
+                        self.__analysis.logger.log(cl=self,method=sys._getframe(),message="not computed sum pollutants for time slot: "+ts+" and link splitted in: "+str(split))
 
             self.__analysis.logger.log(cl=self,method=sys._getframe(),message="finish sum pollutants")
 

@@ -172,11 +172,13 @@ class Links:
 
         self.graph.logger.log(cl=self,method=sys._getframe(),message="start split finish")
 
-    def splitLinks_ns(self,run):
+    def splitLinks_ns(self,run,listSplit):
+
         if run:
+            if listSplit==None: listSplit=self.graph.config.paramAnalysisNumberOfSplit
             self.graph.logger.log(cl=self,method=sys._getframe(),message="start split links")
             mls=self.__getMultiLineString()
-            for nSplit in self.graph.config.paramAnalysisNumberOfSplit:
+            for nSplit in listSplit:
                 nSplit=int(nSplit)
 
                 pathOutput=self.graph.config.folder_output+self.graph.config.scenario+"_link_splitted_ns_{:0>4}.csv".format(nSplit)
