@@ -6,7 +6,7 @@ from symupol.graph.graph import Graph
 from symupol.graph.links import Links
 
 test_delete_files=False
-pathconfig="/home/mt_licit/project/symupol/scenarios/lafayette/config.xml"
+pathconfig="/home/mt_licit/project/symupol/scenarios/lafayette_02/config.xml"
 # init config
 config=Config(pathconfig)
 
@@ -36,13 +36,13 @@ controller.copyToTmp(True) # copy the setup to the .tmp folder
 graph=Graph(config=config,controller=controller)
 links=Links(graph=graph)
 
-links.setInputXml(path="/media/mt_licit/data/licit_lab_dropbox/Michele Tirico/project/symupol/scenarios/lafayette/CoursLafayette.xml")
+links.setInputXml(path="/media/mt_licit/data/licit_lab_dropbox/Michele Tirico/project/symupol/scenarios/lafayette_02/CoursLafayette.xml")
 # links.setOutputCsv(path="/media/mt_licit/data/licit_lab_dropbox/Michele Tirico/project/symupol/outputs/lafayette/links.csv")
-links.setInputTrajectories(path="/media/mt_licit/data/licit_lab_dropbox/Michele Tirico/project/symupol/outputs/lafayette/trajectoires.csv")
-links.setOutputTrajectories(path="/media/mt_licit/data/licit_lab_dropbox/Michele Tirico/project/symupol/outputs/lafayette/trajectoires2.csv")
+links.setInputTrajectories(path="/media/mt_licit/data/licit_lab_dropbox/Michele Tirico/project/symupol/outputs/lafayette_02/trajectoires.csv")
+links.setOutputTrajectories(path="/media/mt_licit/data/licit_lab_dropbox/Michele Tirico/project/symupol/outputs/lafayette_02/trajectoires2.csv")
 
 links.createCsv(run=True)
 links.addNumberOfSplits_lms(run=True)
-links.addLengthTotrajectories(run=False)
+links.addLengthTotrajectories(run=True)
 links.splitLinks_ns(run=True)
-links.splitLinks_lms(run=False)
+links.splitLinks_lms(run=True)

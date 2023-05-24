@@ -44,7 +44,7 @@ class SumPollutants():
 
                     # remove multiindex
                     df_abstract=df_abstract.reset_index(level=[0,1,2])
-                    # print (df_abstract)
+                    print (df_abstract)
                     list_save=  ['FC', 'CO2_TP', 'NOx_TP', 'CO_TP', 'HC_TP', 'PM_TP','PN_TP', 'nVec']+ \
                                 ["ts-{:0>4}".format(_) for _ in self.__analysis.config.paramAnalysisListTimeSlot]+ \
                                 ["ns-{:0>4}".format(split)]+ \
@@ -52,7 +52,7 @@ class SumPollutants():
                                 ["id_link_ns-{:0>4}".format(split)]
 
                     df_abstract=df_abstract[list_save]
-                    # print (df_abstract)
+                    print (df_abstract)
 
                     # store
                     path_store=self.__analysis.config.folder_output+self.__analysis.config.scenario+"_sumPerSplit_ns-{:0>4}".format(split)+"_"+"ts-{:0>4}".format(ts)+".csv"

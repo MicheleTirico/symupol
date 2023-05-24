@@ -5,9 +5,9 @@ from symupol.edit.editFzp import EditFzp
 from symupol.control.tools import Tools
 
 test_delete_files=False
-run_sy=True
+run_sy=False
 runEditFzp=True
-pathconfig="/home/mt_licit/project/symupol/scenarios/test_grid_01/config.xml"
+pathconfig="/home/mt_licit/project/symupol/scenarios/lafayette_02/config.xml"
 
 # init config
 config=Config(pathconfig)

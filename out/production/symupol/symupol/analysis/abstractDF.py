@@ -35,6 +35,7 @@ class AbstractDF():
         except AssertionError:
             self.__analysis.logger.log(cl=self,method=sys._getframe(),message="abstract DF exist. Do nothing")
 
+
     def setParams (self,addRelativePosition, addCountVehicles,addTimeSlots,addPosSegment):
         self.__runAddRelativePosition=addRelativePosition
         self.__runAddCountVehicles=addCountVehicles
@@ -42,15 +43,13 @@ class AbstractDF():
         self.__runAddPosSegment=addPosSegment
         
     def __createAbstractDF(self):
-        self.__analysis.logger.log(cl=self,method=sys._getframe(),message="start  create df")
-        print (self.__analysis.pathTableMerged)
+        # print (self.__analysis.pathTableMerged)
         df1=pd.read_csv(filepath_or_buffer=self.__analysis.pathTableMerged,sep=";")
         # print (df1)
         # print (df1.columns)
-        data=df1[['t', 'id',"dst",'tron','type',"vit","z","FC","CO2_TP","NOx_TP","CO_TP","HC_TP","PM_TP","PN_TP","length"]]
+        data=df1[['t', 'id',"dst",'tron','type',"vit","z","FC","CO2_TP","NOx_TP","CO_TP","HC_TP","PM_TP","PN_TP"]]  #"length" ???
         df2=pd.DataFrame(data)
         self.__analysis.abstractDF=df2
-        self.__analysis.logger.log(cl=self,method=sys._getframe(),message="finish create df")
         return True,df2
 
     def __addRelativePosition(self,run):

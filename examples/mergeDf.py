@@ -7,8 +7,7 @@ from symupol.control.tools import Tools
 
 test_delete_files=False
 runEditFzp=True
-pathconfig="/home/mt_licit/project/symupol/scenarios/test_grid_01/config.xml"
-pathconfig="/home/mt_licit/project/symupol/scenarios/lafayette/config.xml"
+pathconfig="/home/mt_licit/project/symupol/scenarios/lafayette_02/config.xml"
 
 # init config
 config=Config(pathconfig)
@@ -37,18 +36,18 @@ controller.copyToTmp(True) # copy the setup to the .tmp folder
 
 # create csv from mod
 ccfm=CreateCsvFromMod(config=config,run=True)
-ccfm.setPathInputMod(path="/home/mt_licit/project/symupol/scenarios/test_grid_01/grid_100.mod")
-ccfm.setPathOutputCsv(path="/home/mt_licit/project/symupol/outputs/test_grid_01/grid_100.csv")
+# ccfm.setPathInputMod(path="/home/mt_licit/project/symupol/scenarios/test_grid_01/grid_100.mod")
+# ccfm.setPathOutputCsv(path="/home/mt_licit/project/symupol/outputs/test_grid_01/grid_100.csv")
+#
+# ccfm.setPathInputMod(path="/home/mt_licit/project/symupol/scenarios/lafayette/lafayette_100.mod")
+# ccfm.setPathOutputCsv(path="/home/mt_licit/project/symupol/outputs/lafayette/lafayette_100.csv")
 
-ccfm.setPathInputMod(path="/home/mt_licit/project/symupol/scenarios/lafayette/lafayette_100.mod")
-ccfm.setPathOutputCsv(path="/home/mt_licit/project/symupol/outputs/lafayette/lafayette_100.csv")
-
-ccfm.createCsv(runIfExist=False)
+ccfm.createCsv(runIfExist=True)
 
 # merge DF
 mdf=MergeDF(config=config,run=True)
-mdf.setPathInputMod(path="/home/mt_licit/project/symupol/outputs/lafayette/lafayette_100.csv")
-mdf.setPathInputCsv(path="/home/mt_licit/project/symupol/outputs/lafayette/trajectoires2.csv")
-# mdf.setPathOutputCsv(path="/home/mt_licit/project/symupol/outputs/test_grid_01/merged.csv")
+# mdf.setPathInputMod(path="/home/mt_licit/project/symupol/outputs/lafayette/lafayette_100.csv")
+mdf.setPathInputCsv(path="/home/mt_licit/project/symupol/outputs/lafayette_02/trajectoires2.csv")
+# mdf.setPathOutputCsv(path="/home/mt_licit/project/symupol/outputs/lafayette/lafayette_02_merged.csv")
 mdf.mergeDF(comuteIfExist=True,removeLines=True)
 

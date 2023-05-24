@@ -6,7 +6,7 @@ from symupol.control.tools import Tools
 
 test_delete_files=True
 runEditFzp=True
-pathconfig="/home/mt_licit/project/symupol/scenarios/lafayette/config.xml"
+pathconfig="/home/mt_licit/project/symupol/scenarios/lafayette_02/config.xml"
 
 # init config
 config=Config(pathconfig)
@@ -36,7 +36,7 @@ controller.copyToTmp(True) # copy the setup to the .tmp folder
 # fzp
 ef=EditFzp(config=config,run=True)
 ef.init()
-ef.setPathOutputSymuvia(path="/home/mt_licit/project/symupol/scenarios/lafayette/ref_CMP_060000_230000_traf.xml")
-ef.setPathOutputCsvVehicles(path="/home/mt_licit/project/symupol/outputs/lafayette/trajectoires.csv")
+ef.setPathOutputSymuvia(path="/home/mt_licit/project/symupol/scenarios/lafayette_02/ref_CMP_060000_230000_traf.xml")
+ef.setPathOutputCsvVehicles(path="/home/mt_licit/project/symupol/outputs/lafayette_02/trajectoires.csv")
 ef.compute(storeFzp=True,storeCsv=True,runIfExist=True)
 

@@ -1,15 +1,12 @@
-from symupol.analysis.abstractDF import AbstractDF
-from symupol.analysis.analysis import Analysis
-from symupol.analysis.sumPollutants import SumPollutants
 from symupol.control.logger import Logger
 from symupol.control.config import Config
 from symupol.control.controller import Controller
+from symupol.edit.editFzp import EditFzp
 from symupol.control.tools import Tools
 
 test_delete_files=False
 runEditFzp=True
 pathconfig="/home/mt_licit/project/symupol/scenarios/lafayette_02/config.xml"
-# pathconfig="/home/mt_licit/project/symupol/scenarios/test_grid_01/config.xml"
 
 # init config
 config=Config(pathconfig)
@@ -36,15 +33,8 @@ logger.initStoreLog()
 logger.storeFile()
 controller.copyToTmp(True) # copy the setup to the .tmp folder
 
-# analysis
-a=Analysis(config=config,controller=controller)
-adv=AbstractDF(analysis=a)
-adv.setParams(addRelativePosition=True, addCountVehicles=True,addTimeSlots=True,addPosSegment=False)
-adv.getAbstractDF(storeAbstractDF=False,computeIfExist=False) # todo readIfExist
-
-sp=SumPollutants(analysis=a)
-sp.computeMaxLen(run=True)
-sp.cleanDf(run=True)
-sp.addIdSplit_mls(run=True)
-sp.addGeometryLinks_mls(run=True)
+# fzp
+ef=EditFzp(config=config,run=True)
+ef.init()
+ef.compute(storeFzp=True,storeCsv=True,runIfExist=True)
 
