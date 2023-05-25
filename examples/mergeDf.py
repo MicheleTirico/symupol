@@ -35,7 +35,7 @@ logger.storeFile()
 controller.copyToTmp(True) # copy the setup to the .tmp folder
 
 # create csv from mod
-ccfm=CreateCsvFromMod(config=config,run=True)
+ccfm=CreateCsvFromMod(config=config,run=True,controller=controller)
 # ccfm.setPathInputMod(path="/home/mt_licit/project/symupol/scenarios/test_grid_01/grid_100.mod")
 # ccfm.setPathOutputCsv(path="/home/mt_licit/project/symupol/outputs/test_grid_01/grid_100.csv")
 #

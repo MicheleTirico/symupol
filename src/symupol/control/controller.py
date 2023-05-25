@@ -59,7 +59,8 @@ class Controller:
         paths=[
             self.__config.tmp,
             self.__config.folder_outputs,
-            self.__config.folder_output
+            self.__config.folder_output,
+            self.__config.folder_charts
         ]
         self.__createfolers(paths)
 

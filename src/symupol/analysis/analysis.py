@@ -19,11 +19,10 @@ class Analysis():
         self.pathAbstractDF=     self.config.pathAbstractDF
 
 
-    def saveJpg (self,saveJpg,pathJpg):
+    def saveJpg (self,saveJpg,pathJpg,fig):
         if saveJpg:
             self.config.logger.log(cl=self,method=sys._getframe(),message="figure stored at: "+pathJpg)
-            plt.savefig(pathJpg)
-
+            fig.savefig(pathJpg)
 
 
 def test (self,val):

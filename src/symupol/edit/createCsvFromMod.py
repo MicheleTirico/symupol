@@ -4,9 +4,10 @@ import csv
 import math as mt
 
 class CreateCsvFromMod:
-    def __init__(self,config,run):
+    def __init__(self,config,controller,run):
 
         self.__config=config
+        self.controller=controller
         self.__run=run
         self.__logger=self.__config.logger
 
@@ -23,6 +24,9 @@ class CreateCsvFromMod:
             if runIfExist:
                 self.__logger.log(cl=self,method=sys._getframe(),message="remove the existing file and compute it")
                 if os.path.exists(self.__outputCsv):  os.system("rm "+self.__outputCsv) # remove file if exist
+                if os.path.exists(self.__inputMod)==False:
+                    self.__logger.warning(cl=self,method=sys._getframe(),message="file .mod not founded in output. Try to copy from scenario",doQuit=False,doReturn=False)
+                    self.controller.copyFiles([self.__config.pathScenario+self.__config.scenario+".mod"],[self.__inputMod])
                 with open (self.__inputMod, "r") as f_input:
                     with open (self.__outputCsv, "w") as f_output:
                         keys=["id","gen","t"]

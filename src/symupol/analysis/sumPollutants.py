@@ -22,19 +22,20 @@ class SumPollutants():
         if run:
             self.__analysis.logger.log(cl=self,method=sys._getframe(),message="start  compute sum split cost")
 
-            # if listTs==None: listTs=self.__analysis.config.paramAnalysisListTimeSlot
-            # if listSplit==None: listSplit=self.__analysis.config.paramAnalysisNumberOfSplit
-
             for split in self.__analysis.config.paramAnalysisNumberOfSplit:
                 for ts in self.__analysis.config.paramAnalysisListTimeSlot:
-
+                    path_store=self.__analysis.config.folder_output+self.__analysis.config.scenario+"_sumPerSplit_ns-{:0>4}".format(split)+"_"+"ts-{:0>4}".format(ts)+".csv"
+                    self.__analysis.controller.removeIfExist(path_store)
                     self.__analysis.logger.log(cl=self,method=sys._getframe(),message="start  compute sum split cost for ns: "+str(split))
                     df_abstract=pd.read_csv(filepath_or_buffer=self.__analysis.config.pathAbstractDF,sep=";")
 
                     split=int(split)
-                    df_abstract["ns-{:0>4}".format(split)]=df_abstract["dst_rel"]//(1/split)+1
+                    # df_abstract["ns-{:0>4}".format(split)]=df_abstract["dst_rel"]//(1/split)+1
+                    df_abstract.loc[df_abstract["dst_rel"] > 1.0 , "dst_rel"] = 0.99999999999999999                # df_abstract["ns-{:0>4}".format(split)].astype(int)
+                    df_abstract["ns-{:0>4}".format(split)]=df_abstract["dst_rel"]*split+1
+                    df_abstract.loc[df_abstract["ns-{:0>4}".format(split)] >split,"ns-{:0>4}".format(split)] = split
+                    df_abstract["ns-{:0>4}".format(split)]=df_abstract["ns-{:0>4}".format(split)].apply(np.floor)
                     df_abstract.loc[df_abstract["ns-{:0>4}".format(split)] == "inf","ns-{:0>4}".format(split)] = 0
-
                     df_abstract.loc[df_abstract["ns-{:0>4}".format(split)] < 0 , "ns-{:0>4}".format(split)] = 0
                     df_abstract.loc[df_abstract["ns-{:0>4}".format(split)] == np.inf , "ns-{:0>4}".format(split)] = 0                # df_abstract["ns-{:0>4}".format(split)].astype(int)
                     df_abstract["id_link_ns-{:0>4}".format(split)]=df_abstract["tron"]+"_"+df_abstract["ns-{:0>4}".format(split)].astype(str)
@@ -52,10 +53,8 @@ class SumPollutants():
                                 ["id_link_ns-{:0>4}".format(split)]
 
                     df_abstract=df_abstract[list_save]
-                    # print (df_abstract)
 
                     # store
-                    path_store=self.__analysis.config.folder_output+self.__analysis.config.scenario+"_sumPerSplit_ns-{:0>4}".format(split)+"_"+"ts-{:0>4}".format(ts)+".csv"
                     self.__analysis.logger.log(cl=self,method=sys._getframe(),message="start  to store file: "+path_store)
                     df_abstract.to_csv(path_store,sep=";")
                     self.__analysis.logger.log(cl=self,method=sys._getframe(),message="finish to store file: "+path_store)

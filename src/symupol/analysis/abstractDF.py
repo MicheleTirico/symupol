@@ -28,7 +28,8 @@ class AbstractDF():
             self.__addCountVehicles(run=self.__runAddCountVehicles)
             self.__addTimeSlots(run=self.__runAddTimeSlots)
             self.__addPosSegment(run=self.__runAddPosSegment)
-            self.__checkInf(run=True)
+            self.__checkInfDistRel(run=True)
+            self.__checkInfPosSegment(run=True)
             self.__storeAbstractDF(storeAbstractDF=storeAbstractDF,df=self.__analysis.abstractDF)
             self.__analysis.logger.log(cl=self,method=sys._getframe(),message="finish create abstract DF")
 
@@ -43,10 +44,7 @@ class AbstractDF():
         
     def __createAbstractDF(self):
         self.__analysis.logger.log(cl=self,method=sys._getframe(),message="start  create df")
-        print (self.__analysis.pathTableMerged)
         df1=pd.read_csv(filepath_or_buffer=self.__analysis.pathTableMerged,sep=";")
-        # print (df1)
-        # print (df1.columns)
         data=df1[['t', 'id',"dst",'tron','type',"vit","z","FC","CO2_TP","NOx_TP","CO_TP","HC_TP","PM_TP","PN_TP","length"]]
         df2=pd.DataFrame(data)
         self.__analysis.abstractDF=df2
@@ -70,8 +68,8 @@ class AbstractDF():
             for split in self.__analysis.config.paramAnalysisNumberOfSplit:
                 self.__analysis.logger.log(cl=self,method=sys._getframe(),message="start  add position of vehicle in the segment for the split: "+split)
                 self.__analysis.abstractDF["ns-"+"{:0>4}".format(split)]= self.__analysis.abstractDF["dst_rel"]*int(split)                    # print (self.__analysis.abstractDF)
-                # self.__analysis.abstractDF.loc[self.__analysis.abstractDF["dst_rel"] == "inf","dst_rel"] = -1#
-                self.__analysis.abstractDF["ns-"+"{:0>4}".format(split)]=self.__analysis.abstractDF["ns-"+"{:0>4}".format(split)].apply(np.floor)
+                # self.__analysis.abstractDF["ns-"+"{:0>4}".format(split)]=self.__analysis.abstractDF["ns-"+"{:0>4}".format(split)].apply(np.floor)
+                self.__analysis.abstractDF["ns-"+"{:0>4}".format(split)]=self.__analysis.abstractDF["ns-"+"{:0>4}".format(split)].apply(np.ceil)
             self.__analysis.logger.log(cl=self,method=sys._getframe(),message="finish add position of vehicle in the segment for the split: "+split)
 
     def __addTimeSlots(self,run):
@@ -85,10 +83,18 @@ class AbstractDF():
 
             self.__analysis.logger.log(cl=self,method=sys._getframe(),message="finish add time slots")
 
-    def __checkInf(self,run):
+    def __checkInfDistRel(self,run):
         if run:
-            self.__analysis.logger.log(cl=self,method=sys._getframe(),message="replace inf with -1")
-            self.__analysis.abstractDF.loc[self.__analysis.abstractDF['dst_rel'] ==np.inf, 'dst_rel'] = -1
+            valReplace=-1
+            self.__analysis.logger.log(cl=self,method=sys._getframe(),message="replace inf with "+str(valReplace)+" in dst_rel")
+            self.__analysis.abstractDF.loc[self.__analysis.abstractDF['dst_rel'] ==np.inf, 'dst_rel'] = valReplace
+
+    def __checkInfPosSegment(self,run):
+        if run:
+            valReplace=0
+            for split in self.__analysis.config.paramAnalysisNumberOfSplit:
+                self.__analysis.logger.log(cl=self,method=sys._getframe(),message="replace inf with "+str(valReplace) +" in pos segment of ns-"+"{:0>4}".format(split))
+                self.__analysis.abstractDF.loc[self.__analysis.abstractDF["ns-"+"{:0>4}".format(split)] ==np.inf, "ns-"+"{:0>4}".format(split)] = valReplace
 
     def __storeAbstractDF(self,storeAbstractDF,df):
         if storeAbstractDF:

@@ -41,10 +41,10 @@ controller.copyToTmp(True) # copy the setup to the .tmp folder
 
 # parameters
 list_indicators=['FC', 'CO2_TP', 'NOx_TP', 'CO_TP', 'HC_TP', 'PM_TP', 'PN_TP','id_split']
-indicator_chart=list_indicators[1]
+indicator_chart=list_indicators[5]
 ts=900
 ns=10
-list_ts_chart=[_ for _ in range (0,11,10)]
+list_ts_chart=[_ for _ in range (0,10,9)]
 nameFile="lafayette_ts-{0:0>4}_ns-{1:0>4}_{2}".format(ns,ts,indicator_chart)
 pathChart_noExt="/media/mt_licit/data/licit_lab_dropbox/Michele Tirico/project/symupol/outputs/lafayette_02/charts/"+nameFile
 
@@ -69,11 +69,10 @@ pl.compute(run=False)
 
 # get chart
 list_indicators=['FC', 'CO2_TP', 'NOx_TP', 'CO_TP', 'HC_TP', 'PM_TP', 'PN_TP','id_split']
-pl.getSingleDistr_multiTs(run=True,ts=ts,ns=ns,list_ts_chart=list_ts_chart,indicator=indicator_chart,show=True,saveJpg=True,pathJpg=pathChart_noExt+"_multiTs.jpg")
+pl.getSingleDistr_multiTs(run=False,ts=ts,ns=ns,list_ts_chart=list_ts_chart,indicator=indicator_chart,show=True,saveJpg=True,pathJpg=pathChart_noExt+"_multiTs.jpg")
 pl.getScatterPlot(run=False,ts=ts,list_ts_chart=list_ts_chart,indicator=indicator_chart,show=True,saveJpg=True,pathJpg=pathChart_noExt+"_scatter.jpg")
-pl.getBoxPlot(run=False,ts=ts,list_ts_chart=list_ts_chart,indicator=indicator_chart,show=False,saveJpg=True,pathJpg=pathChart_noExt+"_boxplot.jpg")
-pl.getScatterPlot_diagonal(run=True,ts=ts,ns=ns,list_ts_chart=[0,5],indicator="PM_TP",show=True,saveJpg=True,pathJpg=pathChart_noExt+"_scatter_diagonal.jpg")
+pl.getBoxPlot(run=True,ts=ts,list_ts_chart=list_ts_chart,indicator=indicator_chart,show=True,saveJpg=True,pathJpg=pathChart_noExt+"_boxplot.jpg")
+pl.getScatterPlot_diagonal(run=False,ts=ts,ns=ns,list_ts_chart=[0,5],indicator="PM_TP",show=True,saveJpg=True,pathJpg=pathChart_noExt+"_scatter_diagonal.jpg")
 
-#pl.gestSingleBar(run=True,ts=900,ns=10,ts_chart=1,indicator="FC",saveJpg=True)
 
 

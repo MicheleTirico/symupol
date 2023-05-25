@@ -11,7 +11,7 @@ class MergeDF:
 
         self.__inputMod             =self.__config.outputCsvFromMod#self.__config.getFileExtention(self.__config.folder_output,".mod")[0]# TODO to check
         # self.__config.pathOutputMod =self.__inputMod
-        self.__inputCsv             =self.__config.pathOutputVehicles
+        self.__inputCsv             =self.__config.pathTrajectories2
         self.__outputCsv            =self.__config.pathOutputMergedTmp
 
 
@@ -46,11 +46,11 @@ class MergeDF:
             else:
                 self.__logger.log(cl=self,method=sys._getframe(),message="file exist. We do not compute merge")
 
-        self.__removeNotCompleteLines(removeLines)
+        if removeLines: self.__removeNotCompleteLines(removeLines)
         self.__logger.log(cl=self,method=sys._getframe(),message="finish merge dataframes")
 
-    def __removeNotCompleteLines(self,run):
-        if run:
+    def __removeNotCompleteLines(self,removeLines):
+        if removeLines:
             self.__logger.log(cl=self,method=sys._getframe(),message="start remove incomplete lines")
             if os.path.exists(self.__config.pathOutputMerged):  os.system("rm "+self.__config.pathOutputMerged) # remove file if exist
             i,stopCondition=0,-100

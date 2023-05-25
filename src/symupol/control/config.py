@@ -30,17 +30,21 @@ class Config:
         self.folder_outputs=                self.pathAbs+self.__getValType("urls","url","folder_outputs","dir")+"/"
         self.folder_output=                 self.folder_outputs+self.__getValType("urls","url","scenario","dir")+"/"
         self.scenario=                      self.__getValType("urls","url","scenario","dir")
+        self.inputSymuvia=                  self.pathScenario+self.__getValType("urls","url","inputSymuvia","file")
+        self.folder_charts=                 self.folder_output+"charts/"
 
         self.setupTmp=                      self.tmp+self.__getValType("urls","url","setup","file")+".xml"
         self.outputTmp=                     self.tmp+"/OUT1/"
 #        self.outputPhem=                    self.folder_output+"phem/"
 #        self.outputPhemMod=                 self.folder_output+"phem/"+"tmp_400.mod"       # TODO: set the name file
         self.pathOutputSymupy               =self.folder_output+self.__getValType("urls","url","scenario","dir")+"_output_sy.xml"
+        self.outputSymuvia=                 self.pathScenario+self.__getValType("urls","url","outputSymuvia","file")
 
         self.pathLinks=                     self.folder_output+self.scenario+"_links.csv"
         # trajectoires (class editFzp)
-        self.pathOutputVehicles=            self.folder_output+"trajectoires.csv"
-        self.pathFzp                        =self.folder_output+"trajectoiresFzp.fzp"
+        self.pathOutputVehicles=            self.folder_output+self.scenario+"_trajectoires.csv"
+        self.pathFzp                        =self.folder_output+self.scenario+"_trajectoiresFzp.fzp"
+        self.pathTrajectories2=              self.folder_output+self.scenario+"_trajectoires2.csv"
 
         self.pathConfigOutput=              self.folder_output+self.__getValType("urls","url","config","file")+".xml"
 

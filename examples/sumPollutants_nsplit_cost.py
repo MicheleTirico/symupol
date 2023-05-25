@@ -45,9 +45,9 @@ links.setInputXml(path="/media/mt_licit/data/licit_lab_dropbox/Michele Tirico/pr
 links.setOutputCsv(path="/media/mt_licit/data/licit_lab_dropbox/Michele Tirico/project/symupol/outputs/lafayette_02/links.csv")
 links.setInputTrajectories(path="/media/mt_licit/data/licit_lab_dropbox/Michele Tirico/project/symupol/outputs/lafayette_02/trajectoires.csv")
 links.setOutputTrajectories(path="/media/mt_licit/data/licit_lab_dropbox/Michele Tirico/project/symupol/outputs/lafayette_02/trajectoires2.csv")
-links.createCsv(run=False)
-links.addLengthTotrajectories(run=False)
-# links.splitLinks_ns(run=True)
+links.createCsv(run=True)
+links.addLengthTotrajectories(run=True)
+links.splitLinks_ns(run=True)
 
 # analysis
 a=Analysis(config=config,controller=controller)
