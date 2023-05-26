@@ -3,6 +3,7 @@ import sys
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+import random as rd
 
 class PollutantDistribution():
     def __init__(self,analysis):
@@ -10,9 +11,9 @@ class PollutantDistribution():
         self.analysis.config.logger.log(cl=self,method=sys._getframe(),message="initialize pollutant distribution")
         self.pathAbstractDf=self.analysis.config.pathAbstractDF
 
-        self.__Pollutants=['FC', 'CO2_TP', 'NOx_TP', 'CO_TP', 'HC_TP', 'PM_TP', 'PN_TP']
-        self.__PollutantsPrint=['Fuel consumption', 'CO_2', 'NOx_TP', 'CO_TP', 'HC_TP', 'PM_TP', 'PN_TP']
-        self.__PollutantsMeasure=["g/h","g/h","g/h","g/h","g/h","g/h","g/h"]
+        self.__Pollutants=['FC', 'CO2_TP', 'NOx_TP', 'CO_TP', 'HC_TP', 'PM_TP', 'PN_TP',"nVec"]
+        self.__PollutantsPrint=['Fuel consumption', 'CO_2', 'NOx_TP', 'CO_TP', 'HC_TP', 'PM_TP', 'PN_TP',"nVec"]
+        self.__PollutantsMeasure=["g/h","g/h","g/h","g/h","g/h","g/h","g/h","-"]
     def __getIndicator(self,indicator_pos):         
         return  self.__Pollutants[indicator_pos],\
                 self.__PollutantsPrint[indicator_pos],\
@@ -50,6 +51,77 @@ class PollutantDistribution():
                     self.df_groupby_ns.to_csv(path_store,sep=";")
                     self.analysis.logger.log(cl=self,method=sys._getframe(),message="finish to store file: "+path_store)
 
+
+    def getSumVehicles(self,run,ts,ns,list_ts_chart,show,saveJpg,pathJpg):
+        if run:
+            indicator_name,indicator_print,indicator_measure="nVec","nVec","-"
+            self.analysis.config.logger.log(cl=self,method=sys._getframe(),message="get single distribution of pollutant at different timeslot. Params ts: {0}, ns: {1}, indicator: {2}, and ns_chart: {3}  ".format(str(ts),str(ns),indicator_name,list_ts_chart))
+            path_groupby=self.analysis.config.folder_output+self.analysis.config.scenario+"_groupby_"+"ns-{:0>4}".format(ns)+"_ts-{:0>4}".format(ts)+".csv"
+            df1=pd.read_csv(path_groupby,sep=";")
+
+            fig, ax = plt.subplots()
+            test,i=1,0
+            while test==1 and i< len(list_ts_chart):
+                df2=df1[df1["ts-{:0>4}".format(ts)]==list_ts_chart[i]]
+                x=df2["ns-{:0>4}".format(ns)]
+                y=df2["nVec"]
+                ax.set_xticks(x)
+
+                if len(x)!=0:
+                    self.analysis.config.logger.log(cl=self,method=sys._getframe(),message="add line for ts-"+str(list_ts_chart[i]))
+                    ax.plot(x,y,label="ts-"+str(list_ts_chart[i]+1))
+                else:test=self.analysis.config.logger.warning(cl=self,method=sys._getframe(),message="Line ts-"+str(list_ts_chart[i])+" has not been added. Ts out of range",doQuit=False,doReturn=True)
+                i+=1
+
+            ax.legend(loc="upper center",fontsize="10")
+            plt.title("number of vehicles. time slots: {}, n. of splits: {}".format(ts,ns))
+            plt.xlabel("splits")
+            x_ticks_labels=["crossroads"]+[str(_) for _ in range(1,ns+1,1)]
+            ax.set_xticklabels(x_ticks_labels, fontsize=10)
+            plt.ylabel("number of vehicles".format(indicator_print,indicator_measure))
+
+            # text="sum intersection={0:.2f} ({2:.2f}%)\nsum links={1:.2f} ({3:.2f}%)".format(sumInt,sumLinks,sumInt/(sumLinks+sumInt),sumLinks/(sumLinks+sumInt))            # ax.text(x=1,y=ax.get_ylim()[1]-ax.get_ylim()[1]/10,fontsize=10,s=text)
+            if show:    plt.show()
+            self.analysis.saveJpg(saveJpg=saveJpg,pathJpg=pathJpg,fig=fig)
+
+
+    def getDistributionPollutantsPerSplit_normNvec(self,run,ts,ns,list_ts_chart,indicator_pos,show,saveJpg,pathJpg):
+
+        if run:
+            indicator_name,indicator_print,indicator_measure=self.__getIndicator(indicator_pos)
+            self.analysis.config.logger.log(cl=self,method=sys._getframe(),message="get single distribution of pollutant at different timeslot. Params ts: {0}, ns: {1}, indicator: {2}, and ns_chart: {3}  ".format(str(ts),str(ns),indicator_name,list_ts_chart))
+            path_groupby=self.analysis.config.folder_output+self.analysis.config.scenario+"_groupby_"+"ns-{:0>4}".format(ns)+"_ts-{:0>4}".format(ts)+".csv"
+            df1=pd.read_csv(path_groupby,sep=";")
+            sumLinks,sumInt=0,0
+            fig, ax = plt.subplots()
+            test,i=1,0
+            while test==1 and i< len(list_ts_chart):
+                df2=df1[df1["ts-{:0>4}".format(ts)]==list_ts_chart[i]]
+                x=df2["ns-{:0>4}".format(ns)]
+                # nvec=df2["nVec"]
+                y=df2[indicator_name]/df2["nVec"]
+                ax.set_xticks(x)
+
+                if len(x)!=0:
+                    sumLinks,sumInt=sumLinks+sum(list(y)[1:]),sumInt+list(y)[0]
+                    self.analysis.config.logger.log(cl=self,method=sys._getframe(),message="add line for ts-"+str(list_ts_chart[i]))
+                    ax.plot(x,y,label="ts-"+str(list_ts_chart[i]+1))
+                else:test=self.analysis.config.logger.warning(cl=self,method=sys._getframe(),message="Line ts-"+str(list_ts_chart[i])+" has not been added. Ts out of range",doQuit=False,doReturn=True)
+                i+=1
+
+            ax.legend(loc="upper center",fontsize="10")
+            plt.title("Pollutant: {}, time slots: {}, n. of splits: {}".format(indicator_print,ts,ns))
+            plt.xlabel("splits")
+            x_ticks_labels=["crossroads"]+[str(_) for _ in range(1,ns+1,1)]
+            ax.set_xticklabels(x_ticks_labels, fontsize=10)
+            plt.ylabel("{} emission [{}]".format(indicator_print,indicator_measure))
+
+            # text="sum intersection={0:.2f} ({2:.2f}%)\nsum links={1:.2f} ({3:.2f}%)".format(sumInt,sumLinks,sumInt/(sumLinks+sumInt),sumLinks/(sumLinks+sumInt))            # ax.text(x=1,y=ax.get_ylim()[1]-ax.get_ylim()[1]/10,fontsize=10,s=text)
+            if show:    plt.show()
+            self.analysis.saveJpg(saveJpg=saveJpg,pathJpg=pathJpg,fig=fig)
+
+
+
     def getDistributionPollutantsPerSplit(self,run,ts,ns,list_ts_chart,indicator_pos,show,saveJpg,pathJpg):
 
         if run:
@@ -85,20 +157,100 @@ class PollutantDistribution():
             self.analysis.saveJpg(saveJpg=saveJpg,pathJpg=pathJpg,fig=fig)
 
 
+    def getMultiPlotDistributionPollutantsPerSplit(self,run,ts,ns,list_indicator_pos,list_ts_chart,show,saveJpg,pathJpg):
+        if run:
+            # indicator_name,indicator_print,indicator_measure=self.__getIndicator(indicator_pos)
+            self.analysis.config.logger.log(cl=self,method=sys._getframe(),message="get multiplot distribution of pollutant at different timeslot. Params ts: {0}, ns: {1}, and ns_chart: {2}  ".format(str(ts),str(ns),list_ts_chart))
+            path_groupby=self.analysis.config.folder_output+self.analysis.config.scenario+"_groupby_"+"ns-{:0>4}".format(ns)+"_ts-{:0>4}".format(ts)+".csv"
+            df1=pd.read_csv(path_groupby,sep=";")
+            fig, ax = plt.subplots(3, 2,sharex=True, sharey=False)
+            fig.suptitle("Pollutants. Time slots: {}, n. of splits: {}".format(ts,ns))
+            indicator_pos=0
+            for x_chart in range(3):
+                for y_chart in range(2):
+                    test,i=1,0
+                    indicator_name,indicator_print,indicator_measure=self.__getIndicator(list_indicator_pos[indicator_pos])
+                    self.analysis.config.logger.log(cl=self,method=sys._getframe(),message="add plot distribution of pollutant {}".format(indicator_name))
+
+                    while test==1 and i< len(list_ts_chart):
+                        df2=df1[df1["ts-{:0>4}".format(ts)]==list_ts_chart[i]]
+                        x=df2["ns-{:0>4}".format(ns)]
+                        y=df2[indicator_name]
+                        # ax.set_xticks(x)
+
+                        if len(x)!=0:
+                            self.analysis.config.logger.log(cl=self,method=sys._getframe(),message="add line for ts-"+str(list_ts_chart[i]))
+                            # ax.plot(x,y,label="ts-"+str(list_ts_chart[i]+1))
+                            ax[x_chart,y_chart].plot(x,y)#,label="ts-"+str(list_ts_chart[i]+1))
+                            ax[x_chart,y_chart].set_title("Pollutant: {}".format(indicator_print))
+                            # ax.xlabel("splits")
+
+                        # ax.set_xticklabels(x_ticks_labels, fontsize=10)
+                        else:test=self.analysis.config.logger.warning(cl=self,method=sys._getframe(),message="Line ts-"+str(list_ts_chart[i])+" has not been added. Ts out of range",doQuit=False,doReturn=True)
+                        i+=1
+
+                    indicator_pos+=1
+
+            labels=["ts-"+str(list_ts_chart[i]+1) for i in range(len(list_ts_chart))]
+            fig.legend(loc="upper right",fontsize="10",labels=labels)
+
+            # plt.xlabel("splits")
+
+            x_ticks_labels=["cr."]+[str(_) for _ in range(1,ns+1,1)]
+            # x_ticks_labels=[0]+[_ for _ in range(1,ns+1,1)]
+
+            plt.xticks(range(11),x_ticks_labels, fontsize=10)
+            plt.tight_layout()
+            # if show:    plt.show()
+            self.analysis.saveJpg(saveJpg=saveJpg,pathJpg=pathJpg,fig=fig)
+
     def getBoxPlotPerSplit(self,run,ts,ns,list_ts_chart,indicator_pos,show,saveJpg,pathJpg):
         if run:
             indicator_name,indicator_print,indicator_measure=self.__getIndicator(indicator_pos)
             self.analysis.config.logger.log(cl=self,method=sys._getframe(),message="get box plot per split at different timeslot. Params ts: {0}, ns: {1}, indicator: {2}, and ns_chart: {3}  ".format(str(ts),str(ns),indicator_name,list_ts_chart))
 
+            dist,widths=0.02,.3
+            df1=pd.read_csv(self.pathAbstractDf,sep=";")
+
+            fig, ax = plt.subplots()
+
+            t0_list,t1_list=[],[]
+
+            t=[t0_list,t1_list]
+            df2_ts0=df1[df1["ts-{:0>4}".format(ts)]==list_ts_chart[0]]
+            df2_ts1=df1[df1["ts-{:0>4}".format(ts)]==list_ts_chart[1]]
+
+            for p in [n*1.0 for n in range(11) ]:
+                vals0=df2_ts0[df2_ts0["ns-0010"]==p][indicator_name]
+                vals1=df2_ts1[df2_ts1["ns-0010"]==p][indicator_name]
+
+                t0_list.append(vals0)
+                t1_list.append(vals1)
+
+            t0 = plt.boxplot(t0_list,positions=np.array(np.arange(len(t0_list)))*1.0-(widths+dist)/2, widths=widths)
+            t1 = plt.boxplot(t1_list,positions=np.array(np.arange(len(t1_list)))*1.0+(widths+dist)/2,widths=widths)
+            define_box_properties(t0, 'tab:blue',"ts-"+str(list_ts_chart[0]+1))
+            define_box_properties(t1, 'tab:orange',"ts-"+str(list_ts_chart[1]+1))
+
+            x_ticks_labels=["crossroads"]+[str(_) for _ in range(1,ns+1,1)]
+            plt.xticks(range(11),x_ticks_labels, fontsize=10)
+
+            plt.title("Pollutant: {}, time slots: {}, n. of splits: {}".format(indicator_print,ts,ns))
+            plt.xlabel("splits")
+            plt.ylabel("{} emission [{}]".format(indicator_print,indicator_measure))
+
+            if show:    plt.show()
+            self.analysis.saveJpg(saveJpg=saveJpg,pathJpg=pathJpg,fig=fig)
 
 
 
 
 
-
-
-
-
+def define_box_properties(plot_name, color_code,label):
+    for k, v in plot_name.items():
+        plt.setp(plot_name.get(k), color=color_code)
+    plt.plot([], c=color_code, label=label)
+    plt.legend()
 
 
     # TEST -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------

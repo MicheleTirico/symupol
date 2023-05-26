@@ -15,7 +15,7 @@ runComputeAbstractDF=True
 runSumPollutants=False
 
 # parameters charts
-list_indicators=['FC', 'CO2_TP', 'NOx_TP', 'CO_TP', 'HC_TP', 'PM_TP', 'PN_TP']
+list_indicators=['FC', 'CO2_TP', 'NOx_TP', 'CO_TP', 'HC_TP', 'PM_TP', 'PN_TP',"nVec"]
 indicator_pos=0
 indicator_name=list_indicators[indicator_pos]
 ts=900
@@ -23,8 +23,11 @@ ns=10
 list_ts_chart=[_ for _ in range (0,10,9)]
 
 # paths
-nameFile="lafayette_ts-{0:0>4}_ns-{1:0>4}_{2}".format(ns,ts,indicator_name)
-pathChart_noExt="/media/mt_licit/data/licit_lab_dropbox/Michele Tirico/project/symupol/outputs/lafayette_03/charts/"+nameFile
+nameFile="lafayette_ts-{0:0>4}_ns-{1:0>4}".format(ns,ts)
+nameFile_indicator="lafayette_ts-{0:0>4}_ns-{1:0>4}_{2}".format(ns,ts,indicator_name)
+
+path_folder="/media/mt_licit/data/licit_lab_dropbox/Michele Tirico/project/symupol/outputs/lafayette_03/charts/"
+pathChart_noExt=path_folder+nameFile_indicator
 pathconfig="/home/mt_licit/project/symupol/scenarios/lafayette_03/config.xml"
 
 # init config
@@ -61,7 +64,14 @@ pl.compute(run=runSumPollutants)
 pl.setTimeRange(timeRange=["6:00:00","23:00:00"])   # to complete
 for indicator_pos in range(0,6):
     indicator_name=list_indicators[indicator_pos]
-    nameFile="lafayette_ts-{0:0>4}_ns-{1:0>4}_{2}".format(ns,ts,indicator_name)
+    nameFile_indicator="lafayette_ts-{0:0>4}_ns-{1:0>4}_{2}".format(ns,ts,indicator_name)
     pathChart_noExt="/media/mt_licit/data/licit_lab_dropbox/Michele Tirico/project/symupol/outputs/lafayette_03/charts/"+nameFile
-    pl.getDistributionPollutantsPerSplit(run=True,ts=ts,ns=ns,list_ts_chart=list_ts_chart,indicator_pos=indicator_pos,show=False,saveJpg=True,pathJpg=pathChart_noExt+"_distPolPerSp.jpg")
 
+    pl.getDistributionPollutantsPerSplit(run=False,ts=ts,ns=ns,list_ts_chart=list_ts_chart,indicator_pos=indicator_pos,show=False,saveJpg=True,pathJpg=pathChart_noExt+"_distPolPerSp.jpg")
+    pl.getBoxPlotPerSplit(run=False,ts=ts,ns=ns,list_ts_chart=list_ts_chart,indicator_pos=indicator_pos,show=False,saveJpg=True,pathJpg=path_folder+nameFile_indicator+"_boxPlot.jpg")
+    pl.getDistributionPollutantsPerSplit_normNvec(run=True,ts=ts,ns=ns,list_ts_chart=list_ts_chart,indicator_pos=indicator_pos,show=False,saveJpg=True,pathJpg=path_folder+nameFile_indicator+"_distPolPerSp_normNvec.jpg")
+
+# pl.getDistributionPollutantsPerSplit(run=False,ts=ts,ns=ns,list_ts_chart=list_ts_chart,indicator_pos=indicator_pos,show=False,saveJpg=True,pathJpg=pathChart_noExt+"_distPolPerSp.jpg")
+pl.getSumVehicles(run=True,ts=ts,ns=ns,list_ts_chart=list_ts_chart,show=False,saveJpg=True,pathJpg=path_folder+nameFile+"_nVec_boxPlot.jpg")
+
+pl.getMultiPlotDistributionPollutantsPerSplit(run=False,ts=ts,ns=ns,list_ts_chart=list_ts_chart,list_indicator_pos=[1,2,3,4,5,6],show=True,saveJpg=True,pathJpg=path_folder+nameFile+"_multiplotdistPolPerSp.jpg")
