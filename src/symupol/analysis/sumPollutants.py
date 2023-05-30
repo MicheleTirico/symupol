@@ -50,7 +50,8 @@ class SumPollutants():
                                 ["ts-{:0>4}".format(_) for _ in self.__analysis.config.paramAnalysisListTimeSlot]+ \
                                 ["ns-{:0>4}".format(split)]+ \
                                 ["ts-{:0>4}".format(ts)]+ \
-                                ["id_link_ns-{:0>4}".format(split)]
+                                ["id_link_ns-{:0>4}".format(split),
+                                 "dst"]
 
                     df_abstract=df_abstract[list_save]
 

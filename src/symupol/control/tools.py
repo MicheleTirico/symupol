@@ -57,3 +57,7 @@ class Tools:
         distX,distY=abs(line[0][0]-line[1][0]),abs(line[0][1]-line[1][1])
         length=pow(pow(distX,2)+pow(distY,2),.5)
         return length
+
+    def __get_seconds(self,time_str):
+        hh, mm, ss = time_str.split(':')
+        return int(hh) * 3600 + int(mm) * 60 + int(ss)

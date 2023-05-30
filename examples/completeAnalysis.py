@@ -1,6 +1,5 @@
 from symupol.analysis.abstractDF import AbstractDF
 from symupol.analysis.analysis import Analysis
-from symupol.analysis.pollutantDistribution import PollutantDistribution
 from symupol.analysis.sumPollutants import SumPollutants
 from symupol.control.logger import Logger
 from symupol.control.config import Config
@@ -14,11 +13,11 @@ from symupol.graph.links import Links
 
 # parameters analysis
 test_delete_files=False
-runEditFzp=True
-runCreateLinks=True
-runCreateCsv=True
-runMergeDf=True
-runComputeAbstractDF=True
+runEditFzp=False
+runCreateLinks=False
+runCreateCsv=False
+runMergeDf=False
+runComputeAbstractDF=False
 runSumPollutants=True
 
 # parameters charts
