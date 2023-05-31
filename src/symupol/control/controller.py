@@ -64,6 +64,7 @@ class Controller:
         ]
         self.__createfolers(paths)
 
+    def createFolders(self,paths):  self.__createfolers(paths)
     def initTmp(self):
         files=[self.__config.setup]
         self.__copyFiles(files,self.__config.tmp)

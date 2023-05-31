@@ -24,7 +24,7 @@ list_ts_chart=[_ for _ in range (0,10,9)]
 
 # paths
 nameFile="lafayette_ts-{0:0>4}_ns-{1:0>4}".format(ts,ns)
-path_folder= "/home/mt_licit/project/symupol/outputs/lafayette_03/charts_splits_02/"
+path_folder= "/home/mt_licit/project/symupol/outputs/lafayette_03/charts_splits_03/"
 pathconfig="/home/mt_licit/project/symupol/scenarios/lafayette_03/config.xml"
 
 # init config
@@ -51,6 +51,7 @@ controller.initFolder()
 logger.initStoreLog()
 logger.storeFile()
 controller.copyToTmp(True) # copy the setup to the .tmp folder
+controller.createFolders([path_folder])
 
 # analysis
 analysis=Analysis(config=config,controller=controller)
@@ -64,14 +65,22 @@ for indicator_pos in range(0,6):
     nameFile_indicator="lafayette_ts-{0:0>4}_ns-{1:0>4}_{2}".format(ts,ns,indicator_name)
 
     csd.getDistributionPollutantsPerSplit(run=False,ts=ts,ns=ns,list_ts_chart=list_ts_chart,indicator_pos=indicator_pos,show=False,saveJpg=True,pathJpg=path_folder+nameFile+"_"+indicator_name+"_distPolPerSp.jpg")
-    csd.getBoxPlotPerSplit(run=False,ts=ts,ns=ns,list_ts_chart=list_ts_chart,indicator_pos=indicator_pos,show=False,saveJpg=True,pathJpg=path_folder+nameFile+"_"+indicator_name+"_boxPlot.jpg")
+    csd.getBoxPlotPerSplit(run=True,ts=ts,ns=ns,list_ts_chart=list_ts_chart,indicator_pos=indicator_pos,show=False,saveJpg=True,pathJpg=path_folder+nameFile+"_"+indicator_name+"_boxPlot.jpg")
     csd.getDistributionPollutantsPerSplit_normNvec(run=False,ts=ts,ns=ns,list_ts_chart=list_ts_chart,indicator_pos=indicator_pos,show=False,saveJpg=True,pathJpg=path_folder+nameFile+"_"+indicator_name+"_distPolPerSp_normnVec.jpg")
 
     csd.getDistributionPollutantsPerSplit_normLength(run=False,ts=ts,ns=ns,list_ts_chart=list_ts_chart,indicator_pos=indicator_pos,show=False,saveJpg=True,pathJpg=path_folder+nameFile+"_"+indicator_name+"_distPolPerSp_normDst.jpg")
-    csd.getDistributionPollutantsPerSplit_normLength_normVeh(run=True,ts=ts,ns=ns,list_ts_chart=list_ts_chart,indicator_pos=indicator_pos,show=False,saveJpg=True,pathJpg=path_folder+nameFile+"_"+indicator_name+"_distPolPerSp_normDstVeh.jpg")
+    csd.getDistributionPollutantsPerSplit_normLength_normVeh(run=False,ts=ts,ns=ns,list_ts_chart=list_ts_chart,indicator_pos=indicator_pos,show=False,saveJpg=True,pathJpg=path_folder+nameFile+"_"+indicator_name+"_distPolPerSp_normDstVeh.jpg")
 
-csd.getSumVehicles(run=False,ts=ts,ns=ns,list_ts_chart=list_ts_chart,show=False,saveJpg=True,pathJpg=path_folder+nameFile+"_nVec_distr.jpg")
-csd.getMultiPlotDistributionPollutantsPerSplit(run=False,ts=ts,ns=ns,list_ts_chart=list_ts_chart,list_indicator_pos=[1,2,3,4,5,6],show=True,saveJpg=True,pathJpg=path_folder+nameFile+"_"+"_multiplotdistPolPerSp.jpg")
+csd.getSumVehicles(run=False,ts=ts,ns=ns,list_ts_chart=list_ts_chart,show=False,saveJpg=True,pathJpg=path_folder+nameFile+"_nVec.jpg")
+csd.getMultiPlotDP(run=False,ts=ts,ns=ns,list_ts_chart=list_ts_chart,list_indicator_pos=[1,2,3,4,5,6],show=False,saveJpg=True,pathJpg=path_folder+nameFile+"_multiplotdistPolPerSp.jpg")
+csd.getMultiPlotDP_normLength_normVeh(run=False,ts=ts,ns=ns,list_ts_chart=list_ts_chart,list_indicator_pos=[1,2,3,4,5,6],show=False,saveJpg=True,pathJpg=path_folder+nameFile+"_multiplotdistPolPerSp_normLen_normVeh.jpg")
+csd.getMultiPlotDP_normLength(run=False,ts=ts,ns=ns,list_ts_chart=list_ts_chart,list_indicator_pos=[1,2,3,4,5,6],show=False,saveJpg=True,pathJpg=path_folder+nameFile+"_multiplotdistPolPerSp_normLen.jpg")
+csd.getMultiPlotDP_normVeh(run=False,ts=ts,ns=ns,list_ts_chart=list_ts_chart,list_indicator_pos=[1,2,3,4,5,6],show=False,saveJpg=True,pathJpg=path_folder+nameFile+"_multiplotdistPolPerSp_normVeh.jpg")
+
+
+
+
+
 
 # get correlation matrix between a pollutant and a traffic variable
 indicator_pos=0

@@ -29,7 +29,6 @@ list_ts_chart=[_ for _ in range (0,10,9)]
 
 # paths
 nameFile="lafayette_ts-{0:0>4}_ns-{1:0>4}_{2}".format(ns,ts,indicator_chart)
-pathChart_noExt="/media/mt_licit/data/licit_lab_dropbox/Michele Tirico/project/symupol/outputs/lafayette_03/charts/"+nameFile
 pathconfig="/home/mt_licit/project/symupol/scenarios/lafayette_03/config.xml"
 
 # init config
