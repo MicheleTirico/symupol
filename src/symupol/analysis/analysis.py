@@ -24,6 +24,11 @@ class Analysis():
         self.pollutantsCompletePrint=   ['Fuel consumption', 'CO_2 emission', 'NOx_TP emission', 'CO_TP emission', 'HC_TP emission', 'PM_TP emission', 'PN_TP  emission',"n. of vehicles"]
         self.pollutantsMeasure=         ["g/h","g/h","g/h","g/h","g/h","g/h","g/h","-"]
 
+
+    def set_splits(self,ns):        self.config.paramAnalysisNumberOfSplit=ns
+    def set_timeSplots(self,ts):            self.config.paramAnalysisListTimeSlot=ts
+
+
     def readAbstractDF(self,run):
         if run:
             self.config.logger.log(cl=self,method=sys._getframe(),message="read abstract df")

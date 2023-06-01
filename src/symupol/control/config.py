@@ -45,6 +45,7 @@ class Config:
         self.pathOutputVehicles=            self.folder_output+self.scenario+"_trajectoires.csv"
         self.pathFzp                        =self.folder_output+self.scenario+"_trajectoiresFzp.fzp"
         self.pathTrajectories2=              self.folder_output+self.scenario+"_trajectoires2.csv"
+        self.pathSpeeds=                     self.folder_output+self.scenario+"_speeds.csv"
 
         self.pathConfigOutput=              self.folder_output+self.__getValType("urls","url","config","file")+".xml"
 
